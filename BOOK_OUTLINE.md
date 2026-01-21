@@ -18,6 +18,34 @@ An **agentic system** is a goal-driven loop that can:
 
 This is not “AGI” and not “hands-off autonomy”. It’s **structured autonomy with constraints**.
 
+## Running case studies (used throughout)
+We’ll build and revisit two agents in every part of the book, using them to illustrate design choices, failure modes, tooling, evals, and production concerns.
+
+### Shared scenario context (to keep examples consistent)
+- Organization type: mid-size SaaS company
+- Internal corpus: policy wiki + SOPs + product docs (versioned, access-controlled)
+- High-level constraint: outputs must respect confidentiality and least-privilege access
+
+### Case study A: Research+Write agent
+**Goal:** Produce a well-structured written artifact grounded in sources.
+- Typical requests: “Write a brief on X”, “Draft a blog post with citations”, “Create a competitive landscape report”
+- Inputs: topic, audience, length/format, constraints (tone, stance), allowed sources (hybrid: internal docs + web), citation style (flexible), freshness cutoff
+- Outputs: research plan, annotated sources, outline, draft, citations/bibliography, “open questions” list
+- Tools: web search, internal doc search, URL/doc fetch, document parsing, quote extraction, citation store, outline/draft renderer, plagiarism/duplication checks, redaction/classification checks
+- Core risks: fabricated or low-quality citations, cherry-picking, outdated info, copying phrasing too closely, leaking confidential/internal material
+- Success checks: citations resolve, claims trace to sources, coverage of key angles, consistent structure and tone, sensitive content handled per policy
+- Anchor example artifact: “Policy change brief” that cites internal policy diffs + external guidance/regulations (when allowed)
+
+### Case study B: Instructional Design agent
+**Goal:** Design corporate training that aligns job performance outcomes, assessments, and learning experiences.
+- Typical requests: “Design onboarding for role X”, “Create compliance training for policy Y”, “Build a sales enablement module”, “Write assessments + rubrics for this objective”
+- Inputs: learner profile (role/level/region), time, modality (live/async/blended), internal policies/SOPs, constraints (tools used on the job, accessibility, localization, brand voice, legal/compliance requirements)
+- Outputs: learning objectives (performance-based), course/lesson flow, activities/scenarios, knowledge checks and assessments, rubrics, facilitator guide, learner handouts, accessibility notes, LMS-ready package outline (e.g., SCORM/xAPI)
+- Tools: internal policy/SOP lookup, template library, scenario/activity generator, question bank, reading-level estimator, time estimator, accessibility checker, localization checks, LMS export
+- Core risks: misalignment (objectives ≠ assessments), policy inaccuracies, role-irrelevant content, cognitive overload, inaccessible materials, licensing/attribution issues, leaking internal details into public-facing artifacts
+- Success checks: alignment rubric passes, time fits, accessibility constraints satisfied, content maps to current policies/SOPs, clear instructions and grading criteria, SME/compliance sign-off
+- Anchor scenario: annual security + privacy + acceptable-use compliance training (auditable, high-stakes, easy to evaluate)
+
 ---
 
 # Table of contents (detailed)
@@ -79,7 +107,7 @@ D. Case studies and “build logs” (examples to adapt)
   - inconsistent outcomes across similar inputs
   - escalating prompt length and complexity
 - A practical reframing: prompts are **policies**, not solutions
-- Chapter exercise: classify 10 real tasks as “promptable” vs “system-required”
+- Chapter exercise: break the Research+Write and Instructional Design agents into steps, labeling each as “promptable” vs “system-required”
 
 ### 2) Failure modes you can’t prompt away
 **Purpose:** Make the limits concrete with a taxonomy of failures.
@@ -89,8 +117,9 @@ D. Case studies and “build logs” (examples to adapt)
 - Long-horizon tasks: compounding error across steps
 - Non-determinism and variance under temperature/latency constraints
 - The “format trap”: JSON that breaks, tables that drift, citations that lie
+- Case study examples: fabricated citations in Research+Write; misaligned objectives/assessments in Instructional Design
 - Adversarial inputs: prompt injection, jailbreaks, social engineering
-- Chapter exercise: write a “failure budget” for a feature (what can go wrong and how you’ll detect it)
+- Chapter exercise: write a “failure budget” for both case studies (what can go wrong and how you’ll detect it)
 
 ### 3) Prompt debt: the hidden cost of prompt-only solutions
 **Purpose:** Introduce maintenance, versioning, and testability.
@@ -104,8 +133,9 @@ D. Case studies and “build logs” (examples to adapt)
   - “mega prompt” with every rule ever
   - hardcoding business logic in prose
   - relying on “please be accurate”
+- Case study: “mega prompts” that try to encode citation rules (Research+Write) or corporate policy/compliance requirements (Instructional Design)
 - A better unit of work: prompts as **components** with contracts
-- Chapter exercise: refactor a mega prompt into roles: router, extractor, writer, verifier
+- Chapter exercise: refactor a “mega prompt” for one case study into roles: router, researcher, writer, verifier
 
 ### 4) Where prompting still matters (and where it belongs)
 **Purpose:** Avoid false dichotomies; keep what works.
@@ -124,7 +154,8 @@ D. Case studies and “build logs” (examples to adapt)
   - prompt *design* inside an agent architecture
   - prompt *testing* with evals
   - prompt *versioning* with change control
-- Chapter exercise: create a “prompt surface area” budget (what must be in prompt vs code/config)
+- Case study: keep voice/formatting prompts small; enforce citations, policy compliance, and objective↔assessment alignment via tools + validators
+- Chapter exercise: create a “prompt surface area” budget for each case study (what must be in prompt vs code/config)
 
 ---
 
@@ -143,7 +174,8 @@ D. Case studies and “build logs” (examples to adapt)
   - store facts externally
   - compute with tools
   - verify with tests
-- Chapter exercise: draw the system boundary for an LLM feature (what’s inside/outside the model)
+- Case study: define system boundaries for Research+Write and Instructional Design (model vs tools vs human review)
+- Chapter exercise: draw the system boundary for both case studies (what’s inside/outside the model)
 
 ### 6) Degrees of agency: when to use what
 **Purpose:** Prevent over-agenting; introduce a decision framework.
@@ -161,7 +193,7 @@ D. Case studies and “build logs” (examples to adapt)
   - need for actions/side effects
   - tolerance for latency/cost
   - availability of ground truth checks
-- Chapter exercise: score 5 candidate features on the ladder and pick the minimum viable agency
+- Chapter exercise: score both case studies (and 3 of your own features) on the ladder and pick the minimum viable agency
 
 ### 7) The agent loop: plan → act → observe → reflect
 **Purpose:** Establish a canonical loop to reference throughout the book.
@@ -177,7 +209,7 @@ D. Case studies and “build logs” (examples to adapt)
   - budget exceeded (tokens/time/tool calls)
   - missing permission / needs human approval
   - irrecoverable tool failure
-- Chapter exercise: write stopping conditions for an agent and list the telemetry you’ll need
+- Chapter exercise: write stopping conditions for both case studies and list the telemetry you’ll need
 
 ---
 
@@ -192,6 +224,9 @@ D. Case studies and “build logs” (examples to adapt)
   - code execution
   - CRM/ticketing systems
   - content management
+- Case study toolsets:
+  - Research+Write: search → fetch → extract → cite → draft → verify
+  - Instructional Design: policy/SOP lookup → templates/resources → checks → LMS export
 - Tool design principles:
   - narrow, composable functions
   - explicit inputs/outputs (schemas)
@@ -203,7 +238,7 @@ D. Case studies and “build logs” (examples to adapt)
   - allowlists/denylists
   - rate limits and quotas
   - semantic validators (e.g., “email must exist in directory”)
-- Chapter exercise: design a tool API surface for “research + summarize” that prevents common failures
+- Chapter exercise: design a tool API surface for “research + write” (search/fetch/extract/cite) and one key tool for Instructional Design (policy/SOP lookup or LMS export)
 
 ### 9) Grounding with retrieval: search, RAG, and citations
 **Purpose:** Replace “know things” with “find things and cite them.”
@@ -226,7 +261,8 @@ D. Case studies and “build logs” (examples to adapt)
   - irrelevant retrieval
   - missing key documents
   - citation laundering (“sounds cited but isn’t”)
-- Chapter exercise: define a citation policy (what qualifies as a source, how to quote, when to refuse)
+- Case study: citation policy (Research+Write, hybrid internal+web) and source/licensing/confidentiality policy (Instructional Design)
+- Chapter exercise: define a citation policy for Research+Write and a source/licensing/confidentiality policy for corporate training materials
 
 ### 10) Planning and task decomposition that survives reality
 **Purpose:** Make plans useful, adaptable, and testable.
@@ -242,7 +278,10 @@ D. Case studies and “build logs” (examples to adapt)
   - exploration steps (“gather requirements”, “inspect data”)
   - branching and backtracking
   - budget-aware planning
-- Chapter exercise: convert a vague request into a task graph with checkpoints and fail-fast tests
+- Case study decompositions:
+  - Research+Write: clarify → research plan → gather sources → extract notes/quotes → outline → draft → verify citations/claims → revise
+  - Instructional Design: clarify constraints → objectives + policies/SOPs → assessment plan → activities/scenarios → accessibility/localization → alignment QA
+- Chapter exercise: convert a vague request (“write about X” or “design training for role Y”) into a task graph with checkpoints and fail-fast tests
 
 ### 11) State and memory: what to store, when, and why
 **Purpose:** Separate short-term reasoning from long-term knowledge and user context.
@@ -261,7 +300,8 @@ D. Case studies and “build logs” (examples to adapt)
   - redaction and PII handling
   - write triggers (“only store confirmed facts”)
   - retrieval triggers (“only fetch when needed”)
-- Chapter exercise: create a “memory rubric” for what the agent is allowed to remember
+- Case study: Research+Write remembers voice/house style; Instructional Design remembers role context, constraints, and brand/compliance requirements (with consent)
+- Chapter exercise: create a “memory rubric” for both case studies (what the agent is allowed to remember)
 
 ### 12) Verification: evaluation inside the loop
 **Purpose:** Replace “sounds right” with “passes checks.”
@@ -276,7 +316,8 @@ D. Case studies and “build logs” (examples to adapt)
   - rubric-based
   - test-case based (“golden set”)
   - property-based (“must include X, must not include Y”)
-- Chapter exercise: define an eval suite for a writing agent (factuality, tone, structure, safety)
+- Case study evaluators: citation resolvability + claim traceability (Research+Write); alignment rubric + accessibility checks (Instructional Design)
+- Chapter exercise: define eval suites for both case studies (factuality, tone, structure, safety, alignment)
 
 ---
 
@@ -293,7 +334,7 @@ D. Case studies and “build logs” (examples to adapt)
 - Self-consistency and sampling:
   - when diversity helps
   - when it wastes money
-- Chapter exercise: implement a “generate 3 → evaluate → pick 1” workflow on paper for a real task
+- Chapter exercise: implement a “generate 3 → evaluate → pick 1” workflow for either 3 Research+Write outlines or 3 Instructional Design lesson flows
 
 ### 14) Multi-agent patterns: supervisor/worker, debate, routing
 **Purpose:** Show how to decompose responsibility without chaos.
@@ -309,7 +350,10 @@ D. Case studies and “build logs” (examples to adapt)
   - shared context explosion
   - conflicting objectives
   - blame assignment and debugging difficulty
-- Chapter exercise: design roles for a “support triage agent” and define each role’s input/output contract
+- Case study roles:
+  - Research+Write: researcher, writer, fact-checker/citation auditor, editor
+  - Instructional Design: objectives/policy mapper, assessment designer, activity/scenario designer, accessibility reviewer, QA aligner
+- Chapter exercise: design roles for both case studies and define each role’s input/output contract
 
 ### 15) Orchestration: workflows, state machines, and queues
 **Purpose:** Translate agent behavior into reliable software.
@@ -340,7 +384,7 @@ D. Case studies and “build logs” (examples to adapt)
   - “black box autopilot”
   - overconfident tone
   - irreversible actions without confirmation
-- Chapter exercise: design an approval flow for a tool that can modify external systems (CRM, repo, email)
+- Chapter exercise: design an approval flow for a tool that can publish a draft (CMS/repo) or push a lesson into an LMS
 
 ---
 
@@ -400,6 +444,7 @@ D. Case studies and “build logs” (examples to adapt)
 - Compliance & privacy:
   - PII handling, retention, deletion
   - auditability and access logs
+- Case study concerns: injection via web pages + untrusted internal docs (Research+Write) and confidentiality/licensing/compliance constraints in corporate training content (Instructional Design)
 - Chapter exercise: write a “tool security checklist” and apply it to one tool
 
 ### 20) Cost, latency, and model routing in production
@@ -418,7 +463,7 @@ D. Case studies and “build logs” (examples to adapt)
 - SLAs:
   - interactive vs background
   - progressive disclosure (show interim results)
-- Chapter exercise: create a cost model for one agent feature and set budget guards
+- Chapter exercise: create a cost model for either Research+Write or Instructional Design and set budget guards
 
 ---
 
@@ -482,3 +527,24 @@ D. Case studies and “build logs” (examples to adapt)
 - Monitoring dashboards exist (latency, cost, failure rate)
 - Human escalation path exists
 
+---
+
+# Appendix D — Case studies and “build logs” (examples to adapt)
+
+## D1) Research+Write agent build log (outline)
+- Anchor artifact: “Policy change brief” grounded in internal policy diffs + external guidance/regulations (when allowed)
+- Define success criteria: structure, coverage, and citations that resolve
+- Define tool contracts: `web_search`, `internal_search`, `fetch`, `extract`, `cite`, `render`, `plagiarism_check`, `redaction_check`
+- Define citation policy: hybrid sources, quote rules, and refusal conditions
+- Build evals: citation resolvability, claim traceability, plagiarism/duplication, tone/format checks
+- Add UX gates: approve outline, approve source list, approve final draft before publishing
+- Operationalize: caching, context compaction, model routing, incident runbooks
+
+## D2) Instructional Design agent build log (outline)
+- Anchor artifact: annual security + privacy + acceptable-use compliance training (auditable, LMS-exportable)
+- Define success criteria: alignment (objectives↔assessments↔activities), time fit, accessibility
+- Define tool contracts: `policy_lookup`, `sop_lookup`, `template_render`, `resource_search`, `accessibility_check`, `localization_check`, `lms_export`
+- Define policy: licensing/attribution, confidentiality, accessibility requirements, compliance/legal constraints, stakeholder approvals
+- Build evals: alignment rubric, reading level, cognitive load, accessibility, time estimates
+- Add UX gates: confirm learner profile/constraints, approve objectives, approve assessments before activities, final review before export
+- Operationalize: versioned templates/policies, audit logs for exports, safe defaults and rollback

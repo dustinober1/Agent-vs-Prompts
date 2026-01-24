@@ -48,7 +48,7 @@ Users trust agents when they understand what's happening, can verify claims, can
 | Control | Agent runs to completion | Checkpoints where user can pause, edit, redirect |
 | Recoverability | Actions are permanent | Drafts before publish; rollback available for 30 days |
 
-These aren't abstract principles. Research consistently shows that users are more likely to adopt and trust AI systems when the logic is explained—59% more likely, according to recent industry surveys. Transparency directly contributes to adoption.
+These aren't abstract principles. Research consistently shows that users are more likely to adopt and trust AI systems when the logic is explained. Transparency directly contributes to adoption.
 
 ### Transparency through progressive disclosure
 
@@ -703,6 +703,6 @@ Design an approval flow for a tool that can publish a draft (CMS/repo) or push a
 - LangGraph interrupts (human-in-the-loop patterns): https://docs.langchain.com/oss/python/langgraph/interrupts
 - Anthropic computer use security considerations: https://docs.anthropic.com/en/docs/build-with-claude/computer-use
 - Progressive disclosure in UX: https://www.interaction-design.org/literature/topics/progressive-disclosure
-- XAI and transparency in AI systems: https://www.researchgate.net/publication/transparency-explainability-ai
-- Trust calibration in AI agents: Salesforce research showing 59% adoption increase when logic is explained
+- XAI and transparency in AI systems: search "explainability transparency AI adoption research" for current literature
+- Trust calibration in AI agents: industry research consistently shows increased adoption when reasoning is visible
 - UK Government AI regulation framework: https://www.gov.uk/government/publications/ai-regulation-a-pro-innovation-approach

@@ -296,6 +296,8 @@ Example escalation map:
 
 The key is to upgrade in response to **measured failures**, not vibes.
 
+With the rung chosen and budgets set, the next question is what happens inside the loop. Chapter 7 breaks down the canonical agent loop: **plan → act → observe → reflect**—the engine that makes agentic systems work.
+
 ## Case study thread
 
 ### Research+Write (Policy change brief)

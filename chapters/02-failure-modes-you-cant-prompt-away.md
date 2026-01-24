@@ -151,6 +151,8 @@ If you instrument nothing else, instrument these:
 
 These are not “nice to have”. They are the minimum needed to turn failures into debuggable incidents instead of mysteries.
 
+In the next chapter, we'll see how these failures accumulate over time into *prompt debt*—and why that debt is harder to see and repay than the technical debt you're used to.
+
 ## Case study thread
 ### Research+Write (Policy change brief)
 - Fabricated or low-quality citations:

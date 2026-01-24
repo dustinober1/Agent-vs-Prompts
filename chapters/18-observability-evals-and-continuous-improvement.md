@@ -42,7 +42,7 @@ The goal: **log enough to reconstruct any decision, without logging sensitive da
                  ├─────────────────┤
                  │    Outcomes     │ ← Final results, success/failure
                  ├─────────────────┤
-            │    Decisions    │ ← Why this path was chosen
+                 │    Decisions    │ ← Why this path was chosen
                  ├─────────────────┤
                  │  Intermediate   │ ← State between steps
                  │    Artifacts    │

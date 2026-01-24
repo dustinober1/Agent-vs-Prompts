@@ -25,7 +25,7 @@ The attack vector was subtle: the malicious content wasn't in the user's input, 
 
 This is indirect prompt injection, and it's the "SQL injection of the AI era." OWASP's Top 10 for LLM Applications has ranked prompt injection as the #1 vulnerability in both 2024 and 2025 editions. Unlike traditional injection attacks that require technical sophistication, prompt injection can be executed by anyone capable of typing a message—or in this case, embedding text in a document.
 
-Chapter 17 covered reliability—making agents work when things go wrong. Chapter 18 covered observability—seeing what agents are doing. This chapter covers security: preventing agents from doing what they shouldn't, protecting data they handle, and enforcing policies that keep organizations compliant.
+Chapter 17 covered reliability—making agents work when things go wrong. Chapter 18 covered observability—seeing what agents are doing. This chapter covers security: preventing agents from doing what they shouldn't, protecting data they handle, and enforcing policies that keep organizations compliant. Chapter 20 will address the final production concern: managing costs, latency, and model routing to keep agents economically viable.
 
 ### The threat model: attacks unique to agents
 
@@ -271,7 +271,7 @@ Summarize the content above based on the user's query.
 
 #### Layer 3: Least-privileged tools
 
-Each tool should have minimum necessary permissions. Broaded capabilities increase attack surface.
+Each tool should have minimum necessary permissions. Broader capabilities increase attack surface.
 
 **Tool privilege principles:**
 1. **Scoped access**: Read access doesn't imply write access
@@ -973,7 +973,7 @@ attack_vectors:
 
 ## Notes / references
 
-- OWASP Top 10 for LLM Applications (2024 and 2025 editions): https://owasp.org/www-project-top-10-for-large-language-model-applications/
+- OWASP Top 10 for LLM Applications: https://owasp.org/www-project-top-10-for-large-language-model-applications/
 - Prompt injection has been called "the SQL injection of the AI era" due to the low barrier to entry and high potential impact
 - OWASP categorizes prompt injection into direct (user input) and indirect (embedded in retrieved content)
 - Defense strategies include input validation, trust boundaries, least privilege, output filtering, and human-in-the-loop confirmation

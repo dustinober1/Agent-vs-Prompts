@@ -14,352 +14,310 @@ Well-designed tools make agent behavior reliable by constraining inputs/outputs 
 
 ## Draft
 
-### From Chapter 7: the "act" step is where tools live
-Chapter 7 established the agent loop: interpret → plan → act → observe → update → reflect → decide. The "act" step is tool use: searching, fetching, parsing, calculating, writing.
+### The week you shipped tools (and everything got worse)
 
-In that loop, tools serve three functions:
-1. **Ground the model in facts** (retrieval tools): search, fetch, extract.
-2. **Do work the model can't do reliably** (compute tools): date math, schema validation, diffs, formatting.
-3. **Take actions in the world** (effect tools): create tickets, send notifications, update records.
+You've seen this story before.
 
-This chapter is about designing those tools well—so the agent loop stays predictable.
+The prompt-only version of your policy brief generator kept hallucinating citations. Chapter 2 warned you this would happen; Chapter 4 told you validation belongs outside the prompt. So your team did the right thing: you added tools. A search tool. A fetch tool. A citation verifier.
 
-### The tool design mistake you've already made
-If you've built an agentic system, you've probably experienced this:
-- A tool works in the demo.
-- In production, edge cases appear: missing fields, timeouts, permission errors, partial results.
-- The model doesn't know how to recover: it hallucinates around errors or retries infinitely.
-- Someone patches the prompt to explain the error, creating more debt.
+The demo worked beautifully. The agent searched internal docs, pulled quotes, drafted the brief, and every citation resolved.
 
-The root cause is usually not the model. It's the tool.
+Then production happened.
 
-A well-designed tool:
-- Has a narrow, well-defined job.
-- Returns structured output (including structured errors).
-- Is deterministic or clearly declares its variance.
-- Carries enough information for the model to decide what to do next.
+The search tool returned no results for a perfectly reasonable query—and the agent drafted the brief anyway, inventing sources. The fetch tool timed out on a large document—and the agent reported "source unavailable" for a document that was actually there. The citation verifier failed silently on a malformed doc ID—and the agent marked the citation as verified.
 
-A poorly designed tool:
-- Does too many things (conflated concerns).
-- Returns unstructured text or ambiguous status.
-- Fails silently or returns partial results without signaling.
-- Forces the prompt to interpret tool output instead of acting on it.
+You patched the prompt: "If a tool returns no results, do not proceed." That helped for a week. Then someone changed the search tool's error format, and the agent stopped recognizing failures.
 
-The rest of this chapter is a field guide to tool design that keeps your agent loop reliable.
+The problem was never the model. The problem was the tools.
 
-### The tool taxonomy: retrieval, compute, effect
+### Tools are the hardest part of agent design
 
-Before designing individual tools, classify them. The classification drives your authority model (from Chapter 6).
+Here's something most tutorials don't tell you: tool design is where agentic systems actually succeed or fail.
 
-#### Retrieval tools (read-only, grounding)
-- **search:** find documents, passages, or entities matching a query
-- **fetch:** retrieve a specific document or record by ID
-- **extract:** pull structured data from unstructured content (quotes, entities, sections)
-- **cite:** store a source reference for later verification
+The model is the easy part. It's a commodity. You can swap providers, upgrade versions, tune prompts. But your tools? Those are *your* system. They encode your data model, your permissions, your business logic, your error conditions. They're the bridge between the model's reasoning and your actual infrastructure.
 
-Retrieval tools are your lowest-risk tools. They can still leak data if permissions aren't enforced, but they don't change the world.
+And when that bridge is poorly designed, no amount of prompt engineering will save you.
 
-#### Compute tools (deterministic, side-effect-free)
-- **parse:** validate and transform structured data (JSON, dates, numbers)
-- **diff:** compare two versions of a document or policy
-- **calculate:** arithmetic, date math, eligibility rules
-- **check:** run a validator (schema, rubric, accessibility checker)
+This chapter is a field guide to designing tools that make your agent loop reliable—tools that fail clearly, compose cleanly, and give the model enough information to recover from problems.
 
-Compute tools are your highest-confidence tools. Their outputs are verifiable. If you can replace model reasoning with a compute tool, do it.
+### What Chapter 7 set up
 
-#### Effect tools (write, side effects)
-- **create:** tickets, records, drafts
-- **update:** modify existing records or documents
-- **send:** notifications, emails, exports
-- **delete:** remove records (rare; almost always approval-gated)
+The agent loop from Chapter 7 has an "act" step: the moment when the model calls a tool to do something in the world. That step is where the model's reasoning meets reality.
 
-Effect tools are your highest-stakes tools. They require:
-- explicit approval gates (human or policy-based)
-- clear rollback or undo paths
-- audit logging
+Tools in that loop serve three purposes:
 
-The Chapter 6 principle applies: **separate read tools from write tools**. Know where your authority boundary is.
+**Grounding.** Retrieval tools—search, fetch, extract—give the model facts it doesn't have. They're how you solve the hallucination problem from Chapter 1. The model can't cite a document it didn't retrieve.
 
-### Six design principles for reliable tools
+**Computation.** Compute tools—validators, diff engines, calculators—do work the model can't do reliably. Date math. Schema checking. Policy comparisons. These are deterministic operations where correctness matters and the model would only introduce variance.
 
-These principles are not aspirational. They are operational: if you violate them, you will debug mysterious agent failures.
+**Effect.** Effect tools—ticket creation, email sending, record updates—change the world. These are the highest-stakes tools, the ones that need approval gates and audit trails.
 
-#### 1) Narrow: one tool, one job
-A tool should do one thing well.
+The quality of your agent loop depends on the quality of these tools. And "quality" here means something specific: clear contracts, structured errors, and predictable behavior.
 
-**Bad:** `search_and_summarize(query)` – conflates retrieval and reasoning.
+### The tool mistake everyone makes
 
-**Good:**
-- `search(query)` → returns source IDs and snippets
-- Then the model summarizes (its job)
+Here's the pattern that trips up almost every team building their first agentic system:
 
-When a tool does too much, you can't tell where failures originate.
+You need the agent to search for policy documents. So you expose your existing search API as a tool. The search API was built for humans using a web interface—it returns HTML snippets, ranks by popularity, and handles errors by returning an empty result with a 200 status code.
 
-#### 2) Composable: tools should chain cleanly
-The output of one tool should be usable as the input to another.
+The model calls the tool. It gets back... something. An empty list when there were actually permission issues. A list of results that includes stale documents the user shouldn't see. HTML that the model has to parse into something useful.
 
-**Example chain:**
+Every ambiguity becomes a failure mode.
+
+Compare that to a tool designed for agents:
+- Returns structured JSON with explicit fields
+- Separates "no results found" from "permission denied" from "timeout"
+- Filters by permission before returning results
+- Includes freshness metadata the model can use
+
+The difference isn't sophistication—it's clarity. The agent-ready tool makes the model's job easier by being explicit about what happened.
+
+### The three kinds of tools (and why it matters)
+
+Before you design individual tools, classify them. The classification determines your authority model.
+
+**Retrieval tools** are read-only. They search, fetch, extract, and cite. They're your lowest-risk tools because they don't change the world—but they can still leak data if you're not careful about permissions. Examples:
+- `search`: find documents matching a query
+- `fetch`: retrieve a specific document by ID
+- `extract_quotes`: pull verbatim excerpts from content
+- `cite_store`: save a citation for later verification
+
+**Compute tools** are deterministic and side-effect-free. They parse, validate, diff, and calculate. These are your highest-confidence tools because their outputs are verifiable. If you can replace model reasoning with a compute tool, you should. Examples:
+- `schema_validate`: check if JSON matches a schema
+- `diff_policy`: compare two policy versions
+- `calculate_deadline`: date math
+- `alignment_check`: verify objectives have assessments
+
+**Effect tools** change the world. They create, update, send, and delete. These are your highest-stakes tools, the ones where mistakes have consequences. They need:
+- Explicit approval gates (human or policy-based)
+- Clear rollback or undo paths
+- Audit logging for every action
+
+The principle from Chapter 6 applies: separate read tools from write tools. Know exactly where your authority boundary is, and make that boundary a system constraint, not a prompt suggestion.
+
+### Six principles that keep tools reliable
+
+These aren't best practices. They're operational requirements. Violate them, and you'll spend your weeks debugging mysterious agent failures instead of improving your product.
+
+#### Narrow: one tool, one job
+
+The most common tool design mistake is conflation. You build `search_and_summarize` because it seems efficient—one tool call instead of two. But now you can't tell whether failures come from search or summarization. You can't reuse the search in other contexts. You can't validate the search results before summarizing.
+
+Good tools do one thing. `search` returns source IDs. The model decides whether to fetch. `fetch` returns content. The model decides whether to extract quotes. Each step is observable, testable, and composable.
+
+If you find yourself naming a tool with "and" in it, split it.
+
+#### Composable: outputs chain into inputs
+
+The output of one tool should be usable as the input to another without the model doing gymnastics.
+
+A composable tool chain looks like this:
+
 ```
-search("policy on PII handling") → [doc_id_1, doc_id_2]
-fetch(doc_id_1) → { content: "...", last_updated: "..." }
-extract_quotes(content, query) → [{ quote: "...", section: "..." }]
-cite(doc_id_1, quote, claim_id) → { citation_id: "..." }
-```
+search("policy on PII handling") 
+    → [doc_id_1, doc_id_2]
 
-If `search` returned a blob of text instead of IDs, `fetch` couldn't work. Composability requires predictable shapes.
+fetch(doc_id_1) 
+    → { content: "...", last_updated: "2025-11-15" }
 
-#### 3) Schema-first: every tool has a contract
-Define the input schema and output schema before you build the tool.
+extract_quotes(content, claim="retention period") 
+    → [{ quote: "PII must be deleted within 90 days...", section: "3.2" }]
 
-**Input schema:**
-- Required fields (with types and constraints)
-- Optional fields (with defaults)
-- Validation rules
-
-**Output schema:**
-- Success shape (typed fields)
-- Error shape (structured, not prose)
-- Partial-result shape (when applicable)
-
-**Why this matters:**
-- The model can be told what to pass and what to expect.
-- Validators can check inputs before calling.
-- Observers (in the loop) can parse outputs reliably.
-
-OpenAI's function calling and structured outputs exist precisely because "ONLY output JSON" isn't reliable. Tools need the same discipline.
-
-#### 4) Deterministic (or declare variance)
-Wherever possible, tools should return the same output for the same input.
-
-Deterministic tools:
-- `fetch(doc_id)` returns the same document
-- `calculate_deadline(start_date, duration)` returns the same date
-- `schema_validate(json, schema)` passes or fails consistently
-
-Variance sources (flag these explicitly):
-- search ranking changes over time
-- document versions change (require "as-of" parameters)
-- rate limits and latency cause partial results
-
-When variance exists, the tool should signal it (e.g., `{ results: [...], freshness: "live", confidence: "may-change" }`).
-
-#### 5) Idempotent (for effect tools)
-Calling an effect tool twice with the same input should not double the effect.
-
-**Idempotent (safe to retry):**
-- `update_ticket(ticket_id, { status: "resolved" })` – same status, no change
-- `create_or_update_draft(draft_id, content)` – replaces if exists
-
-**Not idempotent (dangerous to retry):**
-- `send_email(to, body)` – sends two emails
-- `create_ticket(fields)` – creates two tickets
-
-For non-idempotent tools:
-- require explicit confirmation (human gate)
-- use deduplication keys (client-generated IDs)
-- log and warn on duplicate calls
-
-#### 6) Least privilege: only what's needed
-A tool should only access data and systems it needs for its job.
-
-**For retrieval tools:**
-- scope to allowed corpora (permission-filtered)
-- never return docs the user/context shouldn't access
-
-**For effect tools:**
-- scope to allowed actions (create but not delete; update status but not reassign)
-- require escalation for sensitive operations
-
-Least privilege is not just security—it reduces the blast radius of model errors and prompt injections.
-
-### Tool contracts: the artifact that makes agents debuggable
-
-For each tool, write a contract spec. This is the artifact that makes agent behavior auditable.
-
-**Contract template:**
-```yaml
-tool:
-  name: ""
-  purpose: ""
-  owner: ""
-  version: ""
-
-inputs:
-  required:
-    - name: ""
-      type: ""
-      description: ""
-      constraints: ""
-  optional:
-    - name: ""
-      type: ""
-      default: ""
-      description: ""
-
-outputs:
-  success:
-    - name: ""
-      type: ""
-      description: ""
-  error:
-    shape: "{ error_type, message, recoverable, suggestion }"
-    error_types:
-      - name: ""
-        meaning: ""
-        recovery: ""
-  partial:
-    - name: ""
-      type: ""
-      description: ""
-
-behavior:
-  deterministic: true | false
-  idempotent: true | false (for effect tools)
-  latency_p50_ms: 0
-  latency_p99_ms: 0
-
-permissions:
-  required_scopes: []
-  denied_data: []
-
-budgets:
-  max_calls_per_request: 0
-  max_results: 0
+cite_store(doc_id_1, quote, claim_id) 
+    → { citation_id: "cite_001" }
 ```
 
-This contract is not documentation—it's a system artifact. Use it to:
-- generate model-facing tool descriptions
-- validate inputs before calling
-- parse outputs in the observe step
-- audit tool behavior during incidents
+Notice how each output is structured to be a valid input for the next step. If `search` returned a blob of merged text instead of IDs, the chain would break.
 
-### Structured errors: the key to agent recovery
+When you design a new tool, ask: what will call this, and what will this call? Design the interfaces to snap together cleanly.
 
-Most tool failures in production are not "tool down." They're edge cases:
-- permission denied
-- no results found
-- partial match (low confidence)
-- invalid input
-- timeout
+#### Schema-first: every tool is a contract
 
-If your tool returns `{ "error": "Something went wrong" }`, the model will guess. If your tool returns structured errors, the model can act.
+Before you write a line of tool code, write the schema. What are the required inputs? What are the optional inputs with defaults? What does success look like? What does failure look like?
 
-**Error schema (example):**
+This matters because:
+- The model needs to know what to pass and what to expect
+- Your orchestration code needs to validate inputs before calling
+- Your observe step needs to parse outputs reliably
+- Your debugging needs to answer "did the tool receive valid input?"
+
+OpenAI introduced structured outputs because "ONLY output JSON" wasn't reliable. Your tools need the same discipline. A tool without a schema is a tool waiting to fail in production.
+
+#### Deterministic: same input, same output
+
+Wherever possible, tools should be deterministic. `fetch(doc_id)` should return the same document every time. `calculate_deadline(start, duration)` should return the same date. `schema_validate(json, schema)` should pass or fail consistently.
+
+Determinism is what makes tools trustworthy. When a tool is deterministic, you can test it, cache its results, and reason about its behavior.
+
+But some tools have inherent variance:
+- Search rankings change as documents are added
+- Document content changes between versions
+- Rate limits cause different results under load
+
+When variance exists, make it explicit. Return a `freshness` field. Accept an `as_of_date` parameter. Include a confidence or stability indicator. Don't pretend variance doesn't exist—the model needs to know.
+
+#### Idempotent: safe to retry
+
+Effect tools need special care. If the agent calls `create_ticket` twice with the same input, you probably don't want two tickets.
+
+Idempotent tools are safe to retry:
+- `update_record(id, { status: "resolved" })` sets the status; calling it twice changes nothing
+- `create_or_update_draft(draft_id, content)` creates or replaces; idempotent by design
+
+Non-idempotent tools are dangerous:
+- `send_email(to, body)` sends two emails
+- `create_ticket(fields)` creates duplicates
+
+For non-idempotent effect tools:
+- Require explicit human confirmation
+- Accept client-generated deduplication keys
+- Log and warn on repeated calls with same parameters
+
+#### Least privilege: only what's needed
+
+A tool should only access data and perform actions necessary for its defined job.
+
+For retrieval tools, this means permission filtering. `internal_search` should never return documents the current user can't access—filter *before* returning results, not after. Don't trust the model to respect access boundaries.
+
+For effect tools, this means scoped capabilities. The ticket tool can create and update, but not delete. The email tool can draft, but sending requires a separate approval-gated tool.
+
+Least privilege isn't just security—though it is that. It's also reducing the blast radius of model errors. When the model makes a mistake (and it will), you want the damage contained.
+
+### Structured errors: how agents recover
+
+Most tool failures in production aren't "tool is down." They're edge cases:
+- No results found (but the query was valid)
+- Permission denied (for some documents, not all)
+- Partial results (some sources fetched, others timed out)
+- Rate limited (try again later)
+
+If your tool returns `{ "error": "Something went wrong" }`, the model will guess about what happened. If your tool returns structured errors, the model can actually decide what to do.
+
+Here's what a good error looks like:
+
 ```json
 {
   "error_type": "PERMISSION_DENIED",
-  "message": "User lacks access to confidential policy docs.",
+  "message": "User lacks access to confidential policy corpus.",
   "recoverable": false,
-  "suggestion": "Request approval or narrow query to non-confidential sources."
+  "suggestion": "Narrow query to non-confidential sources or request approval."
 }
 ```
 
-**Error types to define (minimum viable):**
-| Error type | When to use | Model response |
+The error type tells the model *what* happened. The message explains *why*. The recoverable flag tells the model whether to retry. The suggestion tells the model what to try instead.
+
+Define a standard set of error types across all your tools:
+
+| Error Type | Meaning | Typical Response |
 |---|---|---|
-| INVALID_INPUT | Schema validation failed | Fix input and retry |
-| NOT_FOUND | No results / doc doesn't exist | Broaden query or report missing |
-| PERMISSION_DENIED | Scope violation | Escalate or narrow scope |
-| PARTIAL_RESULT | Some results, not all | Proceed with caution + note gaps |
-| TIMEOUT | Tool didn't respond in time | Retry once or switch strategy |
-| RATE_LIMITED | Quota exceeded | Wait or switch strategy |
-| INTERNAL_ERROR | Unexpected failure | Stop and escalate |
+| `INVALID_INPUT` | Request didn't pass schema validation | Fix the input, retry |
+| `NOT_FOUND` | The requested resource doesn't exist | Try a different ID or report missing |
+| `PERMISSION_DENIED` | User can't access this resource | Escalate or narrow scope |
+| `PARTIAL_RESULT` | Some data returned, some missing | Proceed with caution, note gaps |
+| `TIMEOUT` | Tool didn't respond in time | Retry once with same parameters |
+| `RATE_LIMITED` | Too many requests | Wait, then retry or switch strategy |
+| `INTERNAL_ERROR` | Something unexpected failed | Stop and escalate to human |
 
-When the observe step parses a structured error, the reflect step can decide:
-- retry (with modifications)?
-- ask user?
-- proceed with partial data?
-- stop and escalate?
+When your observe step encounters one of these errors, the reflect step can make a real decision instead of guessing.
 
-Without this structure, recovery is guesswork.
+### Validation happens in layers
 
-### Validation layers: schema, allow/deny, quotas, semantic
+You can't validate just once. Validation happens at three points in the tool flow:
 
-Validation happens at three points:
-1. **Before the tool call:** validate inputs
-2. **After the tool call:** validate outputs
-3. **Before the final output:** validate the artifact
+**Before the tool call** — validate inputs. Does the request have all required fields? Are the types correct? Is the query length within bounds? Catch problems before you hit your infrastructure.
 
-#### Schema validation (structural correctness)
-- inputs match required fields and types
-- outputs parse into the expected shape
-- missing fields are flagged, not ignored
+**After the tool call** — validate outputs. Did the tool return the expected shape? Are required fields present? Did an error occur that needs handling? Don't pass garbage to the model.
 
-Use JSON Schema or equivalent. This is table stakes.
+**Before the final output** — validate the artifact. Do citations resolve? Does content pass redaction checks? Does the alignment table have gaps? This is where semantic validation happens.
 
-#### Allow/deny lists (policy enforcement)
-- allowed sources / corpora (least privilege)
-- allowed actions / write scopes
-- denied content patterns (redaction triggers)
+For each layer:
 
-These are not suggestions—they are gates. Tool calls that violate lists should fail, not proceed.
+**Schema validation** checks structural correctness. Use JSON Schema or equivalent. This is table stakes.
 
-#### Quotas and budgets (resource protection)
-- max results per search (prevent context overflow)
-- max calls per tool per request (prevent spam loops)
-- max total tool calls per request (budget from Chapter 7)
+**Allow/deny lists** enforce policy. Which corpora can be searched? Which document types can be exported? Which terms trigger redaction? These are gates, not suggestions.
 
-Quotas are part of the contract. Violating them is an error, not an exception.
+**Quotas and budgets** protect resources. Max results per search (prevent context overflow). Max calls per tool per request (prevent spam loops). These are part of the contract.
 
-#### Semantic validation (content correctness)
-- citation resolution: does the cited doc ID actually exist and contain the quoted text?
-- redaction checks: does the output contain strings that shouldn't be exposed?
-- freshness checks: is the policy current, or was it superseded?
+**Semantic validation** checks meaning, not just structure. Does the cited passage actually support the claim? Is the policy version current? Does the training module cover all required topics? These often require their own tools—a citation verifier, a policy freshness checker.
 
-Semantic validation is harder than schema validation. It often requires a tool itself (e.g., `cite_verify`, `redaction_check`).
+### Tool contracts: the artifact that pays for itself
 
-### The tool inventory: your most valuable system artifact
+For each tool your agent can call, write a contract. This isn't documentation—it's a system artifact that makes everything else easier.
 
-Just as Chapter 3 introduced prompt components, this chapter introduces the **tool inventory**: a versioned, owned list of every tool the agent can call.
+A tool contract specifies:
+- **Inputs**: required fields, optional fields, types, constraints
+- **Outputs**: success shape, error shape, partial-result shape
+- **Behavior**: deterministic? idempotent? latency expectations?
+- **Permissions**: what scopes are required? what data is denied?
+- **Budgets**: max calls per request, max results
 
-**Why this matters:**
-- New tools require review (authority, permissions, error handling).
-- Deprecated tools need migration paths.
-- Tool changes require versioning (breaking changes are major versions).
-- Incidents are debuggable ("which version of `search` ran?").
+When you have contracts:
+- You can generate model-facing tool descriptions automatically
+- You can validate inputs before calling
+- You can parse outputs reliably in the observe step
+- You can debug incidents by checking whether contracts were honored
 
-**Tool inventory format:**
-```yaml
-inventory:
-  last_updated: ""
-  owner: ""
+Keep contracts in source control alongside your code. Version them like APIs—breaking changes are major versions. Review them during design and incident review.
 
-tools:
-  - name: ""
-    version: ""
-    type: "retrieval | compute | effect"
-    status: "active | deprecated | experimental"
-    contract_path: ""
-    dependencies: []
-    allowed_contexts: []
-```
+### The tool inventory: what you're actually running
 
-Keep this inventory in source control. Review it during design and incident review.
+Chapter 3 introduced prompt components. This chapter introduces the **tool inventory**: a versioned, owned list of every tool your agent can call.
+
+Why maintain an inventory?
+- New tools require review before deployment (authority, permissions, error handling)
+- Deprecated tools need migration paths
+- Tool changes require versioning with clear breaking-change policies
+- Incidents become debuggable ("which version of search was deployed?")
+
+A minimal inventory entry:
+- Name and version
+- Type (retrieval / compute / effect)
+- Status (active / deprecated / experimental)
+- Link to contract spec
+- Owner and review date
+
+When your 2 AM incident response starts with "which tools were available and what did they return?", you'll be grateful for the inventory.
 
 ## Case study thread
 
 ### Research+Write (Policy change brief)
 
-#### Tool contracts
-The agent needs these tools:
+Let's apply these principles to the policy brief agent.
 
-| Tool | Type | Purpose | Key constraints |
-|---|---|---|---|
-| `web_search` | retrieval | Find external sources (if allowed) | allowed-domains list; external-only flag |
-| `internal_search` | retrieval | Find internal policy/SOP docs | permission-filtered; scope to assigned corpora |
-| `fetch` | retrieval | Retrieve full doc by ID | last_updated returned; version parameter |
-| `extract_quotes` | retrieval | Pull verbatim excerpts from content | returns quote + section anchor |
-| `cite_store` | retrieval | Store citation for verification | returns citation_id; links claim to source |
-| `cite_verify` | compute | Check that citation resolves | returns pass/fail + quote match score |
-| `redaction_check` | compute | Scan for confidential strings | returns matches + severity |
-| `diff_policy` | compute | Compare two policy versions | returns structured diff |
+**The tool problem we're solving**: The prompt-only version from Chapter 1 produced citations that didn't resolve. Chapter 4 said validation belongs outside the prompt. Chapter 7 defined the loop. Now we need the tools.
 
-#### Guardrails
-- `web_search` only callable if `external_allowed = true` in context
-- `cite_verify` must pass before publishing
-- `redaction_check` must pass; failures are hard stops
+#### The tool inventory
 
-#### Example tool contract: `internal_search`
+| Tool | Type | Purpose |
+|---|---|---|
+| `internal_search` | retrieval | Find internal policy/SOP docs matching a query |
+| `web_search` | retrieval | Find external sources (when allowed) |
+| `fetch` | retrieval | Retrieve a specific document by ID |
+| `extract_quotes` | retrieval | Pull verbatim excerpts from content |
+| `cite_store` | retrieval | Store a source reference for verification |
+| `cite_verify` | compute | Check that a citation resolves and supports the claim |
+| `redaction_check` | compute | Scan output for confidential content |
+| `diff_policy` | compute | Compare two policy versions |
+
+#### Design decisions
+
+**Why separate `internal_search` and `web_search`?** Because they have different permission models. Internal search is always allowed; web search requires explicit `external_allowed = true` in context. Making them separate tools means the allowlist is a system constraint, not a prompt instruction.
+
+**Why `cite_store` and `cite_verify` as separate tools?** Storage is instant and always succeeds. Verification might fail (document moved, quote doesn't match, permission denied). Separating them means the agent can store citations as it works, then verify them all before publishing.
+
+**Why is `redaction_check` a compute tool, not part of the publish flow?** Because the agent needs to see the result before deciding what to do. If redaction check is hidden in the publish step, the agent can't revise and retry.
+
+#### Guardrails baked into tools
+
+- `internal_search` filters by permission before returning results
+- `web_search` fails if `external_allowed` is false in context
+- `cite_verify` returns structured failure when docs don't resolve
+- `redaction_check` returns exact matches and severity levels
+
+These aren't prompt instructions. They're tool behavior. The model can't accidentally bypass them.
+
+#### Example contract: internal_search
+
 ```yaml
 tool:
   name: "internal_search"
@@ -371,44 +329,30 @@ inputs:
   required:
     - name: "query"
       type: "string"
-      description: "Natural language query for policy content."
+      description: "Natural language query."
       constraints: "1-500 characters"
   optional:
     - name: "corpus"
       type: "string[]"
       default: ["policies", "sops"]
-      description: "Corpora to search."
     - name: "as_of_date"
       type: "date"
       default: "today"
-      description: "Return docs valid as of this date."
     - name: "max_results"
       type: "integer"
       default: 10
-      description: "Max documents to return."
 
 outputs:
   success:
-    - name: "results"
-      type: "array"
-      description: "List of { doc_id, title, snippet, score, last_updated }."
+    shape: "{ results: [{ doc_id, title, snippet, score, last_updated }] }"
   error:
     shape: "{ error_type, message, recoverable, suggestion }"
-    error_types:
-      - name: "PERMISSION_DENIED"
-        meaning: "User lacks access to one or more corpora."
-        recovery: "Narrow corpus or escalate."
-      - name: "NO_RESULTS"
-        meaning: "Query returned no matches."
-        recovery: "Broaden query or report."
+    types: ["PERMISSION_DENIED", "NO_RESULTS", "TIMEOUT"]
   partial:
-    - name: "results"
-      type: "array"
-      description: "Partial results with { incomplete: true } flag."
+    shape: "{ results: [...], incomplete: true, reason: '...' }"
 
 behavior:
-  deterministic: false
-  idempotent: true
+  deterministic: false # rankings can change
   latency_p50_ms: 200
   latency_p99_ms: 1500
 
@@ -421,31 +365,44 @@ budgets:
   max_results: 20
 ```
 
+With this contract, the agent knows exactly what to send, what to expect back, and how to handle each error type.
+
 ### Instructional Design (Annual compliance training)
 
-#### Tool contracts
-The agent needs these tools:
+**The tool problem we're solving**: The prompt-only version from Chapter 1 produced objectives that weren't assessed. Chapter 4 said alignment checks belong outside the prompt. Now we need tools that enforce alignment.
 
-| Tool | Type | Purpose | Key constraints |
-|---|---|---|---|
-| `policy_lookup` | retrieval | Fetch current policy sections | must return version + last_verified |
-| `sop_lookup` | retrieval | Fetch SOPs for role-specific procedures | scoped by role/region |
-| `template_library` | retrieval | Retrieve module templates | version-controlled |
-| `alignment_check` | compute | Validate objective↔practice↔assessment mapping | returns gaps as structured list |
-| `accessibility_check` | compute | Run accessibility checklist | returns pass/fail per criterion |
-| `reading_level_check` | compute | Score content against target grade level | returns score + suggestions |
-| `lms_export` | effect | Package module for LMS import | requires approval; returns export_id |
+#### The tool inventory
 
-#### Guardrails
-- `policy_lookup` must include `last_verified` date within freshness window
-- `alignment_check` failures block publishing (no objective without assessment)
-- `lms_export` requires approval gate
+| Tool | Type | Purpose |
+|---|---|---|
+| `policy_lookup` | retrieval | Fetch current policy sections by topic |
+| `sop_lookup` | retrieval | Fetch SOPs for role-specific procedures |
+| `template_library` | retrieval | Retrieve module templates |
+| `alignment_check` | compute | Validate objective↔practice↔assessment mapping |
+| `accessibility_check` | compute | Run accessibility checklist |
+| `reading_level_check` | compute | Score content against target grade level |
+| `lms_export` | effect | Package module for LMS import |
 
-#### Example tool contract: `alignment_check`
+#### Design decisions
+
+**Why is `alignment_check` a tool, not a prompt instruction?** Because "make sure objectives are assessed" is exactly the kind of instruction that fails in prompt form (Chapter 1). The alignment check tool takes structured inputs—objectives, practices, assessments—and returns a structured gap report. The model can't hallucinate past a failing check.
+
+**Why is `lms_export` separated from the rest of the flow?** Because it's an effect tool. It packages content and prepares it for export. That's a write action that needs an approval gate. Keeping it separate makes the gate enforceable.
+
+**Why does `policy_lookup` return `last_verified` dates?** Because freshness matters. Compliance training that references a superseded policy is a liability. The tool's contract includes freshness metadata so the agent can detect stale sources.
+
+#### Guardrails baked into tools
+
+- `policy_lookup` returns `last_verified` date; agent can check against freshness cutoff
+- `alignment_check` returns structured gaps; any gap is a blocking issue
+- `lms_export` requires approval scope; fails without it
+
+#### Example contract: alignment_check
+
 ```yaml
 tool:
   name: "alignment_check"
-  purpose: "Validate that every learning objective has corresponding practice and assessment."
+  purpose: "Validate that every learning objective has practice and assessment."
   owner: "learning-design-team"
   version: "2.0.1"
 
@@ -453,32 +410,25 @@ inputs:
   required:
     - name: "objectives"
       type: "array"
-      description: "List of { objective_id, objective_text }."
-      constraints: "1-50 objectives"
+      description: "[{ objective_id, objective_text }]"
     - name: "practices"
       type: "array"
-      description: "List of { practice_id, practice_text, objective_ids }."
+      description: "[{ practice_id, practice_text, objective_ids }]"
     - name: "assessments"
       type: "array"
-      description: "List of { assessment_id, assessment_text, objective_ids }."
+      description: "[{ assessment_id, assessment_text, objective_ids }]"
 
 outputs:
   success:
-    - name: "alignment_table"
-      type: "array"
-      description: "{ objective_id, has_practice: bool, has_assessment: bool }."
-    - name: "gaps"
-      type: "array"
-      description: "{ objective_id, missing: ['practice' | 'assessment'] }."
-    - name: "pass"
-      type: "boolean"
-      description: "True if no gaps."
+    shape: |
+      {
+        alignment_table: [{ objective_id, has_practice, has_assessment }],
+        gaps: [{ objective_id, missing: ['practice' | 'assessment'] }],
+        pass: boolean
+      }
   error:
     shape: "{ error_type, message, recoverable, suggestion }"
-    error_types:
-      - name: "INVALID_INPUT"
-        meaning: "Objectives, practices, or assessments malformed."
-        recovery: "Fix input structure."
+    types: ["INVALID_INPUT"]
 
 behavior:
   deterministic: true
@@ -493,67 +443,40 @@ budgets:
   max_calls_per_request: 2
 ```
 
+When the agent calls `alignment_check` and gets `{ pass: false, gaps: [...] }`, the reflect step knows exactly what to fix before trying again.
+
 ## Artifacts to produce
 - A tool inventory for each case study (name, type, version, status)
-- A tool contract spec for each tool (inputs/outputs/errors/behavior/permissions)
-- An error-handling matrix: error type → model response → human escalation path
+- A tool contract spec for each major tool (inputs/outputs/errors/behavior/permissions)
+- An error-handling matrix: error type → model response → escalation path
 - A validation layer checklist: what's validated before/after tool calls
 
 ## Chapter exercise
 Design a tool API surface for both case studies.
 
 ### Part 1: Research+Write tools
-Define contracts for:
-1. `internal_search` – search internal docs
-2. `fetch` – retrieve full document
-3. `extract_quotes` – pull verbatim excerpts
-4. `cite_store` + `cite_verify` – store and verify citations
+Pick two tools from the inventory and write full contracts:
+1. `fetch` — retrieve a document by ID
+2. `cite_verify` — check that a citation resolves
 
-For each, specify:
-- required/optional inputs
-- success/error output shapes
-- determinism and idempotency
-- budget constraints
+For each, answer:
+- What inputs are required vs optional?
+- What does a successful response look like?
+- What errors can occur?
+- How should the agent respond to each error type?
 
 ### Part 2: Instructional Design tools
-Define contracts for:
-1. `policy_lookup` – fetch current policy
-2. `alignment_check` – validate objective coverage
-3. `lms_export` – package for LMS (effect tool)
+Pick two tools and write full contracts:
+1. `policy_lookup` — fetch current policy sections
+2. `lms_export` — package for LMS (an effect tool)
 
-For each:
-- What inputs are required vs optional?
-- What errors can occur and how should the agent respond?
+For each, answer:
 - What approval gates apply?
+- What makes this tool idempotent (or not)?
+- How do you handle partial success?
 
-### Suggested format
-Copy/paste per tool:
-```yaml
-tool:
-  name: ""
-  purpose: ""
-  type: "retrieval | compute | effect"
-
-inputs:
-  required: []
-  optional: []
-
-outputs:
-  success: []
-  error:
-    types: []
-  partial: []
-
-behavior:
-  deterministic: true | false
-  idempotent: true | false
-
-permissions:
-  required_scopes: []
-
-budgets:
-  max_calls_per_request: 0
-```
+### Bonus: Design an error
+Pick one common failure from your own system. Design the structured error response that would let an agent recover automatically.
 
 ## Notes / references
 - OpenAI Function Calling: https://platform.openai.com/docs/guides/function-calling
@@ -562,5 +485,5 @@ budgets:
 - JSON Schema specification: https://json-schema.org/
 - ReAct (reasoning + acting for tool use): https://arxiv.org/abs/2210.03629
 - Toolformer (models learning to use tools): https://arxiv.org/abs/2302.04761
-- OWASP LLM Top 10 (tool-related risks: LLM07 Insecure Plugin Design): https://owasp.org/www-project-top-10-for-large-language-model-applications/
+- OWASP LLM Top 10 (LLM07 Insecure Plugin Design): https://owasp.org/www-project-top-10-for-large-language-model-applications/
 

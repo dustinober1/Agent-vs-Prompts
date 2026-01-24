@@ -25,6 +25,8 @@ The training got pulled. The investigation took weeks. The agent lost access to 
 
 This is the memory problem: an agent that forgets nothing is an agent that leaks everything.
 
+Chapter 10 showed how plans generate artifacts—the intermediate and final products of agent work. But where do those artifacts live? What does the agent carry forward when one task ends and another begins? That's the memory problem, and it's more about policy than engineering.
+
 ### Why memory is a policy decision, not a feature
 
 It's tempting to think of memory as purely technical: "the agent should remember things so it can do better work." And that's true, as far as it goes. An agent that forgets its own plan mid-task is useless.
@@ -383,6 +385,8 @@ How does memory expire?
 - Policy-change expiry
 - User-initiated deletion
 - Organizational purge (compliance events)
+
+With state and memory properly designed, you can track where the agent is, what it's produced, and what it's allowed to remember. But how do you know the work is correct? That's the subject of Chapter 12: verification inside the loop.
 
 ## Case study thread
 

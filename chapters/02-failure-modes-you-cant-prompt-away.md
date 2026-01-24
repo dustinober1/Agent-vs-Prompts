@@ -20,7 +20,7 @@ Users don't experience "hallucination" or "context window limits." They experien
 - Unreliable behavior ("it worked yesterday")
 - Risk (confidentiality leaks, policy violations)
 
-The taxonomy matters because different failures require different *detection* and different *controls*. If you can't detect a failure mode, you can't manage it.
+These symptoms look similar on the surface, but their root causes differ. The taxonomy matters because different failures require different *detection* and different *controls*. If you can't detect a failure mode, you can't manage it.
 
 Let's examine each failure mode in detail, using the consistent structure: what it looks like, why prompts don't fix it, and what minimum detectability signals you need.
 
@@ -57,7 +57,7 @@ From a user's perspective, they're all "wrong." From a system's perspective, the
 
 **Why prompts don't fix it:**
 - You can't prompt your way into a larger context window
-- When the prompt contains "everything", attention becomes a bottleneck: the model may comply with some constraints and miss others
+- When the prompt contains "everything", the model's capacity to weigh all instructions becomes a bottleneck: it may comply with some constraints and miss others
 
 **Minimum detectability signals:**
 - Required fields present (e.g., audience, scope, freshness cutoff, confidentiality level)
@@ -215,7 +215,7 @@ Write a "failure budget" for both case studies: what can go wrong, how you'll de
 
 ## Key Takeaways
 
-The seven failure modes share a common thread: they emerge from the fundamental limitations of prompting as a control mechanism. While prompts can guide behavior, they cannot enforce constraints, validate outputs, or ensure reliability in the same way that system-level controls can.
+The seven failure modes share a common thread: they emerge from the fundamental limitations of prompting as a control mechanism. While prompts can guide behavior, they cannot enforce constraints, validate outputs, or ensure reliability—those require mechanisms. System-level controls (detection signals, validation, gates) provide the enforcement that prompts cannot.
 
 In the next chapter, we'll see how these failures accumulate over time into *prompt debt*—and why that debt is harder to see and repay than the technical debt you're used to.
 

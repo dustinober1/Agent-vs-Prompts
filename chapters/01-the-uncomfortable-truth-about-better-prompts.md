@@ -141,6 +141,9 @@ In production, policies only matter when they’re backed by mechanisms:
 This book is about building those mechanisms, and using prompts where they’re strongest: as the interface layer.
 
 ## Case study thread
+
+The rest of this chapter introduces two running case studies that will thread through the book. Each starts with a prompt-only baseline—intentionally naive—so you can see exactly where prompt-only approaches break down and what mechanisms will replace the broken parts.
+
 ### Research+Write (Policy change brief)
 - Baseline (prompt-only): ask for a structured brief “with citations” and “quotes” without any retrieval mechanism.
 - Prompt-only baseline (example prompt; intentionally naive):

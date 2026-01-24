@@ -158,7 +158,7 @@ fallback_chain:
 
 **Model cascade pattern:**
 
-Research from Google and others demonstrates that routing between models based on query complexity can reduce costs by 40–70% while maintaining quality. Simple queries go to smaller, faster, cheaper models. Complex queries escalate to larger models.
+Research on model cascades suggests that routing between models based on query complexity can significantly reduce costs—often by 40% or more—while maintaining quality. Simple queries go to smaller, faster, cheaper models. Complex queries escalate to larger models.
 
 ```yaml
 model_cascade:
@@ -851,13 +851,14 @@ For each likely cause, document:
 2. How is the incident recorded for future reference?
 3. What monitoring improvements follow?
 
+Reliability engineering makes agents dependable. But dependable isn't the same as observable—you also need visibility into what's happening and continuous improvement based on what you learn. Chapter 18 covers observability, evals, and the feedback loops that make agents better over time.
+
 ## Notes / references
 
 - Exponential backoff and jitter: AWS Architecture Blog, "Exponential Backoff and Jitter" (foundational pattern)
 - Idempotency keys: Stripe API documentation, best practice for payment APIs
 - LLM fallback strategies: Research on model cascades and graceful degradation in LLM applications
 - OpenAI Structured Outputs: 100% schema compliance with GPT-4o using strict mode
-- Model cascade research: Google Research on routing queries to smaller models for cost optimization (40-70% cost reduction)
+- Model cascade research: Google Research on routing queries to smaller models for cost optimization
 - Graceful degradation patterns: Industry practices for maintaining partial functionality during outages
 - Constrained decoding: OpenAI's approach to enforcing JSON schema compliance at the token level
-

@@ -349,6 +349,8 @@ validation:
 
 Each artifact is stored, timestamped, and linked to the step that produced it.
 
+Plans generate artifacts, but where do those artifacts live? How does an agent track where it is in a multi-step workflow? That's state management—the subject of Chapter 11.
+
 ## Case study thread
 
 ### Research+Write (Policy change brief)

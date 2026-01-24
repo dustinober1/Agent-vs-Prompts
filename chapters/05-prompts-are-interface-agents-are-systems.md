@@ -39,7 +39,7 @@ Models are not good at being your:
 - **audit trail** (you need stored artifacts + tool traces)
 - **policy engine** (rules change, need owners, and must be testable)
 
-If you treat the model like a database, you will ship confident drift. If you treat it like a reasoning component, you can build a system that is reliable and inspectable.
+If you treat the model like a database, you will ship confident drift (outputs that *feel* correct but silently diverge from ground truth). If you treat it like a reasoning component, you can build a system that is reliable and inspectable.
 
 ### Systems thinking for agentic LLM features
 A useful way to operationalize “system” is to force yourself to name five things:
@@ -223,6 +223,8 @@ telemetry:
 ```
 
 This spec forces the question that prompts can’t answer: *What does the system guarantee, and how do we know?*
+
+With this systems mindset established, the next question is: how much agency does a given task actually need? Chapter 6 introduces a ladder of solutions—from static prompts to multi-agent orchestration—so you can choose the simplest architecture that still works.
 
 ## Case study thread
 ### Research+Write (Policy change brief)

@@ -807,6 +807,12 @@ training_queues:
     singleton: true  # Only one export at a time to avoid conflicts
 ```
 
+### From infrastructure to experience
+
+Orchestration provides the reliability foundation—state machines track progress, checkpoints enable recovery, queues manage load, and artifacts preserve work. But reliable infrastructure isn't enough. Users need to *trust* these systems, understand what's happening, and maintain control when things go wrong.
+
+The human approval gates scattered throughout this chapter's examples hint at the next challenge: designing the interface between humans and agents. How do you show users what the agent is doing? When should you ask for confirmation? How do you make long-running workflows feel responsive? These are questions of **agent UX**—the subject of Chapter 16.
+
 ## Artifacts to produce
 
 - **State machine diagram** for your agent workflow (states, transitions, failure paths)

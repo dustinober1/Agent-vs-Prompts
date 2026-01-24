@@ -113,7 +113,7 @@ Prompts can *describe* the rules (“follow the policy engine’s decision”), 
 #### 2) Authorization and data access control
 This is the sharpest line: prompts are not a security boundary.
 
-If a system retrieves or has access to sensitive data, you can’t rely on “don’t reveal secrets” phrasing to keep you safe—especially under prompt injection. The UK NCSC puts it plainly: current LLMs do not enforce a security boundary between instructions and data inside a prompt.
+If a system retrieves or has access to sensitive data, you can’t rely on “don’t reveal secrets” phrasing to keep you safe—especially under prompt injection. The UK National Cyber Security Centre (NCSC) puts it plainly: current LLMs do not enforce a security boundary between instructions and data inside a prompt.
 
 Put access control in the system:
 - authenticate users and tools
@@ -150,7 +150,7 @@ Treat prompts like signage, not locks:
 - signage helps good-faith behavior
 - locks (policy enforcement) stop failures and adversarial behavior
 
-This is why OWASP includes prompt injection and insecure output handling as top risks for LLM applications: attackers (and accidents) will route around text-only constraints.
+This is why the Open Worldwide Application Security Project (OWASP) includes prompt injection and insecure output handling as top risks for LLM applications: attackers (and accidents) will route around text-only constraints.
 
 ### The prompt surface area budget (a practical design tool)
 Define your **prompt surface area** as: *the amount of product behavior that lives only in prompt text*.
@@ -218,7 +218,7 @@ In an agentic approach, it becomes:
 
 Prompts become one layer in a stack—not the whole stack.
 
-
+With the boundaries of prompting now clear, we can shift from thinking about prompts to thinking about systems. In Part II, we'll define what it means to build agentic systems—and why the mindset change matters more than any particular framework.
 
 ## Case study thread
 ### Research+Write (Policy change brief)
@@ -286,4 +286,3 @@ Rules:
 - UK NCSC on prompt injection (“not SQL injection”): https://www.ncsc.gov.uk/pdfs/blog-post/prompt-injection-is-not-sql-injection.pdf
 - Indirect prompt injection in integrated apps (Greshake et al., 2023): https://arxiv.org/abs/2302.12173
 - NIST AI RMF Generative AI Profile: https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence-profile
-- Consider adding a prompt catalog appendix if you have enough stable components.

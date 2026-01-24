@@ -42,7 +42,7 @@ This chapter is a field guide to designing tools that make your agent loop relia
 
 ### What Chapter 7 set up
 
-The agent loop from Chapter 7 has an "act" step: the moment when the model calls a tool to do something in the world. That step is where the model's reasoning meets reality.
+Chapter 7 defined the agent loop: plan → act → observe → reflect. This chapter expands the "act" step—the moment when the model calls a tool to do something in the world. That step is where the model's reasoning meets reality.
 
 Tools in that loop serve three purposes:
 
@@ -97,7 +97,7 @@ The principle from Chapter 6 applies: separate read tools from write tools. Know
 
 ### Six principles that keep tools reliable
 
-These aren't best practices. They're operational requirements. Violate them, and you'll spend your weeks debugging mysterious agent failures instead of improving your product.
+These are operational requirements, not optional best practices. Violate them, and you'll spend your time debugging mysterious agent failures instead of improving your product.
 
 #### Narrow: one tool, one job
 
@@ -240,7 +240,7 @@ For each layer:
 
 **Semantic validation** checks meaning, not just structure. Does the cited passage actually support the claim? Is the policy version current? Does the training module cover all required topics? These often require their own tools—a citation verifier, a policy freshness checker.
 
-### Tool contracts: the artifact that pays for itself
+### Tool contracts: the artifact that makes everything else easier
 
 For each tool your agent can call, write a contract. This isn't documentation—it's a system artifact that makes everything else easier.
 

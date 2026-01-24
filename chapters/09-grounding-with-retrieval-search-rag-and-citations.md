@@ -12,7 +12,6 @@ Grounded outputs come from retrieval + constraints + citation discipline, not fr
 - Patterns: retrieve-then-read, iterative search, cite-then-answer, contradiction checks
 - Failure modes: irrelevant retrieval, missing docs, citation laundering
 
-## Draft
 
 ### The citation that looked perfect
 
@@ -76,6 +75,8 @@ Let's look at how to do it well.
 "Retrieval" isn't one technique. It's a family of approaches, and choosing the right one matters.
 
 #### Keyword search (BM25 and friends)
+
+BM25 (Best Match 25) is the standard keyword retrieval algorithm.
 
 The simplest approach: match query words to document words. Fast, interpretable, good when your users know the vocabulary.
 
@@ -162,9 +163,11 @@ Each stage is a potential failure point. Monitor all of them.
 
 ### Four retrieval patterns for agents
 
-How you wire retrieval into the agent loop matters. Here are four patterns, from simple to sophisticated.
+Here are four patterns for wiring retrieval into the agent loop, from simple to sophisticated.
 
 #### Pattern 1: Retrieve-then-read (the RAG baseline)
+
+Retrieve-then-read is the baseline for Retrieval-Augmented Generation (RAG)—the pattern that gave the field its name.
 
 The simplest pattern:
 1. User asks a question
@@ -339,6 +342,8 @@ Your citation policy should specify:
 - How conflicts between tiers are resolved
 
 For compliance-sensitive content like our case studies, Tier 1 should be required for any claim that drives action. Lower tiers can inform background context but shouldn't be cited as authority.
+
+Retrieval gives you the sources. Citation discipline makes them traceable. But both assume you know what to retrieve—which brings us to planning. Chapter 10 addresses how agents decompose tasks and decide what information they need before they start searching.
 
 ## Case study thread
 

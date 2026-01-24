@@ -471,6 +471,10 @@ For complex modules, combine patterns:
 
 The patterns compose. Use the right pattern for each sub-task.
 
+### From single agent to many
+
+These patterns—ReAct, Reflexion, tree search—all operate within a single agent context. But some tasks benefit from dividing responsibility across multiple agents: a researcher and a writer, an activity designer and a quality checker. Chapter 14 explores when and how to split work across agents, and what coordination challenges arise when you do.
+
 ## Artifacts to produce
 
 - A bounded "generate 3 → evaluate → pick 1" workflow spec for each case study

@@ -665,6 +665,12 @@ User Request
 [Supervisor: deliver package or incorporate feedback]
 ```
 
+### From patterns to infrastructure
+
+Multi-agent patterns provide the *what*—supervisor/worker, router/specialist, debate—but not the *how* of reliable execution. When workers fail, who retries them? When the supervisor stalls, who times it out? When artifacts need to persist across sessions, where do they live?
+
+These questions move from agent architecture to **orchestration infrastructure**: state machines, queues, workflows, and the operational primitives that make multi-agent systems reliable in production. Chapter 15 addresses how to translate these patterns into software that actually runs.
+
 ## Artifacts to produce
 
 - **Role specifications** for each case study (inputs, outputs, constraints)

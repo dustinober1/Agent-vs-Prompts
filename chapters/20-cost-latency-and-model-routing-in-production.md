@@ -70,7 +70,7 @@ context_growth_cascade:
 
 **Why this matters financially:**
 
-With GPT-4o pricing at ~$2.50 per million input tokens and ~$10 per million output tokens, the cost difference is dramatic:
+With GPT-4o pricing at approximately $2.50 per million input tokens and $10 per million output tokens (note: pricing changes frequently—always check current rates), the cost difference is dramatic:
 
 - First inference (1,700 input × $2.50/M): $0.004
 - After research (14,700 input × $2.50/M): $0.037
@@ -518,7 +518,7 @@ batching_strategy:
 
 ### Latency optimization
 
-Cost and latency are often correlated—bigger contexts are both more expensive and slower. But some latency optimizations are distinct.
+Cost and latency are deeply intertwined. Bigger contexts cost more and take longer to process—you're paying twice: once in dollars and once in user wait time. But latency has its own optimization surface beyond context size. The strategies below focus specifically on reducing time-to-response, some of which also reduce cost, and some of which trade cost for speed.
 
 #### Streaming responses
 
@@ -616,7 +616,7 @@ pre_computation:
 
 ### Service Level Agreements (SLAs)
 
-Different use cases have different latency and cost requirements. Design for them explicitly.
+A Service Level Agreement (SLA) defines the performance expectations for a feature: how fast it responds, how much it can cost, and what quality guarantees it provides. Different use cases have different requirements—a quick lookup and a comprehensive research report shouldn't share the same constraints. Design for these differences explicitly.
 
 #### Interactive vs. background
 
@@ -956,5 +956,6 @@ Create a cost model for either Research+Write or Instructional Design. Include:
 - Anthropic prompt caching (2024): Up to 90% discount on cached prompt prefixes
 - OpenAI structured outputs (2024): 100% schema compliance enabling reliable parsing
 - Context caching is provider-specific; check current documentation for TTL and pricing
+- All pricing figures in this chapter are approximate and subject to change; consult provider documentation for current rates
 - Cost optimization should never compromise core quality metrics—measure both
 

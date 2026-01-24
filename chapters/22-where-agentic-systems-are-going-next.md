@@ -25,7 +25,7 @@ She pulled up the roadmap: multimodal inputs, because users wanted to attach scr
 
 The agent worked. But working agents create new demands—and the landscape around them keeps shifting.
 
-This chapter maps where agentic systems are headed: the trends that will shape the next several years, the challenges that remain stubbornly hard, and a framework for prioritizing your own continued learning.
+This chapter maps where agentic systems are headed: five trends shaping the next several years, four challenges that remain stubbornly hard, and a framework for prioritizing your own continued learning.
 
 ### Trend 1: Better tool use and structured control
 
@@ -431,7 +431,7 @@ But the fundamentals in this book—the shift from prompts to systems, from arti
 
 Build agents that do useful work. Measure whether they actually do it. Keep them secure. Iterate.
 
-That's the job.
+That's the job. And it's a good one.
 
 ## Case study thread
 

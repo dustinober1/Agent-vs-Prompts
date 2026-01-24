@@ -368,6 +368,8 @@ Suggested format (copy/paste):
 - artifact IDs/paths + validation results
 - budgets consumed + stop reason
 
+With the loop defined, the next five chapters expand each leg in detail. Chapter 8 starts with the "act" phase: tool use and function calling as product design.
+
 ## Notes / references
 - ReAct (reasoning + acting with tools): https://arxiv.org/abs/2210.03629
 - OODA loop (control-loop framing): https://en.wikipedia.org/wiki/OODA_loop

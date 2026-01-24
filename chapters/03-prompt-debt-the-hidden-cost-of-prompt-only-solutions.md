@@ -26,7 +26,7 @@ The symptoms are familiar to anyone who has maintained production LLM features:
 
 Traditional technical debt is usually visible in code reviews, performance metrics, and error logs. Prompt debt is more insidious because:
 
-- **System behavior is probabilistic:** Small textual changes can cause large behavioral differences, even when the prompt text remains static across model updates.
+- **System behavior is probabilistic:** Small textual changes can cause large behavioral differences, even when the prompt text itself hasn't changed.
 - **Coupling is hidden:** Model versions, decoding parameters, retrieval systems, and tool outputs all affect results in ways that aren't immediately obvious.
 - **Failures are often silent:** The output looks plausible even when it's wrong, making degradation hard to detect.
 - **Interfaces aren't enforced:** Instructions like "ONLY output JSON" are not equivalent to schema validation—they're merely suggestions.
@@ -46,9 +46,9 @@ Prompts decay when their environment changes, which happens constantly in produc
 
 **Smell:** One prompt handles routing, research, writing, policy enforcement, and validation.
 
-**Replacement:** Split into 3–6 focused prompt components with dedicated validators.
+**Replacement:** Split into 3–6 focused prompt components with dedicated validators and verifiers.
 
-Instead of a monolithic prompt that tries to do everything, break the work into specialized components that each handle a specific aspect of the task.
+Instead of a monolithic prompt that tries to do everything, break the work into specialized components that each handle a specific aspect of the task. (We'll see concrete examples of these components in the case studies below.)
 
 ### 2. Business Logic in Prose
 
@@ -131,6 +131,8 @@ Keep evaluation sets manageable but effective:
 - Automate running these with each change
 
 ## Practical Implementation Guide
+
+Here's a quick-reference summary of how the component-based approach applies to each case study:
 
 ### Research+Write (Policy Change Brief)
 - **Components:** Router, retriever, researcher, writer, citation auditor, redaction checker

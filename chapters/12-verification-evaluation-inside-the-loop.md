@@ -59,6 +59,8 @@ Some verifications require deterministic checks:
 
 Models can approximate these checks, but they can't reliably execute them. A model might "check" that a citation resolves by reasoning that "this looks like a valid policy URL format." That's not the same as actually fetching the URL.
 
+These three problems share a root cause: verification requires access to truth that exists outside the model. The solution isn't better prompting—it's building verification as infrastructure.
+
 ### The verification principle
 
 Here's the principle that makes agents reliable:
@@ -241,6 +243,28 @@ Many checks can be framed either way:
 
 For in-loop decisions, verifiers are usually more useful. For offline improvement, evaluators provide richer signal.
 
+### Types of evaluators
+
+When you need evaluators (not just binary verifiers), three patterns work well:
+
+**Rubric-based:** Score against predefined criteria.
+- "Does the summary include all key changes?" → 0 to 5
+- "Is the tone appropriate for the audience?" → Needs work / Acceptable / Strong
+- Best for: Subjective quality dimensions, human-aligned judgment
+
+**Test-case based ("golden set"):** Compare against known-good examples.
+- A set of input/output pairs where you know the right answer
+- Score = percentage of correct matches
+- Best for: Regression testing, consistency across model versions
+
+**Property-based:** Check for required and prohibited properties.
+- "Must include at least 3 citations"
+- "Must not mention competitor names"
+- "All dates must be in ISO format"
+- Best for: Mechanical requirements, policy enforcement
+
+Most verification suites combine all three: property checks for hard constraints, golden sets for regression, rubrics for quality judgment.
+
 ### Building verification into the loop
 
 Chapter 7 established the agent loop. The "reflect" step is where verification happens.
@@ -407,6 +431,10 @@ Some verification failures should block delivery absolutely. Define your stop-sh
 - Missing required approval
 
 Stop-ship failures don't retry. They escalate to humans or block entirely. The agent cannot fix them autonomously.
+
+### From building blocks to patterns
+
+With verification in place, you have all the core building blocks: tools (Chapter 8), grounding via retrieval (Chapter 9), planning (Chapter 10), state and memory (Chapter 11), and now verification. Part IV explores how to compose these blocks into complete agent patterns—single-agent architectures like ReAct and Reflexion, multi-agent designs, and orchestration approaches.
 
 ## Case study thread
 

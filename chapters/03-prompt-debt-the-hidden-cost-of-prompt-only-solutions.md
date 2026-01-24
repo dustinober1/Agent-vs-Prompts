@@ -13,9 +13,9 @@ Prompt-only features accumulate “prompt debt” as requirements, models, and k
 - A better unit: prompt components with contracts (inputs/outputs/invariants)
 - Minimum viable discipline: versioning, logging, and small eval sets
 
-## Draft
 
-### Prompt debt, defined
+
+## Prompt debt, defined
 Prompt debt is the maintenance burden created when a prompt becomes the primary place you encode product behavior, policy, and downstream contracts.
 
 A typical arc:
@@ -26,20 +26,20 @@ Symptoms:
 - Prompts grow faster than reliability.
 - You can’t explain or audit *why* the system decided something.
 
-### Why it’s sneakier than tech debt
-- Prompts are probabilistic: small textual diffs can cause large behavioral diffs.
+## Why it’s sneakier than tech debt
+- **System behavior is probabilistic:** small textual diffs can cause large behavioral diffs, even if the prompt text is static.
 - Coupling is hidden: model/version, decoding, retrieval, and tool outputs all affect results.
 - Failures are often silent: the output looks plausible even when it’s wrong.
 - Interfaces aren’t enforced: “ONLY output JSON” is not schema validation.
 
-### Why prompts rot
+## Why prompts rot
 Prompts decay when the environment moves:
 - **Requirements shift:** new fields, new constraints, new stakeholders’ definitions of “done”.
 - **Models change:** format adherence, question-asking behavior, citation behavior, style defaults.
 - **Sources/tools evolve:** docs move, retrieval changes, tool output shapes change.
 - **Edge cases accumulate:** the prompt becomes a junk drawer of exceptions.
 
-### Three anti-patterns (and the replacement)
+## Three anti-patterns (and the replacement)
 1) **Mega prompt**
    - Smell: one prompt does routing + research + writing + policy + validation.
    - Replace with: 3–6 prompt components + validators.
@@ -52,7 +52,7 @@ Prompts decay when the environment moves:
    - Smell: “don’t hallucinate / include citations” with no measurable check.
    - Replace with: required artifacts + validation (citations resolve, coverage thresholds, schema checks, alignment checks).
 
-### Prompts as components with contracts
+## Prompts as components with contracts
 A prompt component is a small, named behavior you can test and version.
 
 Minimal contract:
@@ -63,7 +63,7 @@ Minimal contract:
 - Failure response (retry / ask / fallback / human gate)
 - Version
 
-### Case study A: Research+Write (Policy change brief)
+## Case study A: Research+Write (Policy change brief)
 Treat `case_studies/research_write_policy_change_brief_TEMPLATE.md` as the output contract, and split the mega prompt:
 - Router → route + plan + missing inputs
 - Retriever (tool) → sources + excerpts
@@ -74,7 +74,7 @@ Treat `case_studies/research_write_policy_change_brief_TEMPLATE.md` as the outpu
 
 Key shift: “include citations” becomes “produce and validate a claim map”.
 
-### Case study B: Instructional Design (Compliance training)
+## Case study B: Instructional Design (Compliance training)
 Treat `case_studies/instructional_design_compliance_training_MODULE_TEMPLATE.md` as the contract, and split the mega prompt:
 - Policy mapper → required topics + must/must-not + policy refs
 - Objective builder → measurable objectives
@@ -85,7 +85,7 @@ Treat `case_studies/instructional_design_compliance_training_MODULE_TEMPLATE.md`
 
 Key shift: “make it aligned” becomes “block publish if alignment matrix has gaps”.
 
-### Minimum viable discipline
+## Minimum viable discipline
 - Version like APIs: major=contract change; minor=behavior improvement; patch=copy/clarity.
 - Log what ran: component+version, model/version+settings, tool contract versions.
 - Keep eval sets small: 10–30 cases per component, including past regressions.

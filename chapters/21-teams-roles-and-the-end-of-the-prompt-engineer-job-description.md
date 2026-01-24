@@ -118,7 +118,7 @@ evaluation_engineer_outputs:
     - "weekly_adversarial_audit"
 ```
 
-#### Role 3: Reliability/LLMOps Engineer
+#### Role 3: Reliability/LLMOps (LLM Operations) Engineer
 
 **Owns:** Observability, incident response, SLAs, infrastructure
 
@@ -628,6 +628,14 @@ training_ownership:
       - "Alignment rubric (objectives ↔ assessments)"
       - "Reading level verification"
       - "Accessibility checks"
+
+### The organizational shift is the technical shift
+
+The transition from prompt engineering to agentic systems isn't just a change in tools—it's a change in how teams work. The roles, artifacts, and processes described in this chapter aren't overhead; they're the infrastructure that makes reliable AI products possible.
+
+Prompt engineers who expand into systems, measurement, and operations become the builders of the next generation of AI products. Organizations that invest in these roles and collaboration patterns will ship agents that work—not just agents that demo well.
+
+With the organizational foundation in place, one question remains: where is all this going? The next chapter looks at the trends shaping agentic systems and what to focus on as the field evolves.
 ```
 
 ## Artifacts to produce

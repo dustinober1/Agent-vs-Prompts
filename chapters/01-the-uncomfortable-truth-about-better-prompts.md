@@ -67,14 +67,9 @@ Prompting gives fast, visible feedback: you can improve one example, and the mod
 
 ### Plateau Symptoms: You're Optimizing the Wrong Layer
 
-If two or more of these feel familiar, you're probably on the plateau:
+If you recognize your own experience in the list below, you've likely reached the limits of what a prompt-only strategy can provide.
 
-- **Tiny edits cause regressions.** A new rule breaks an old one.
-- **Format brittleness.** JSON keys drift; tables misalign; citations disappear.
-- **Variance under the same input.** "Run it again" becomes part of the workflow.
-- **Prompt bloat.** The prompt accretes every edge case as prose.
-- **Unclear ownership.** When something goes wrong, nobody can point to a failing component—only a wall of text.
-- **No artifact trail.** You can't answer "Why did the agent decide that?" without rereading the entire conversation.
+![Plateau Symptom Checklist](../artifacts/plateau_symptom_checklist.md)
 
 The core problem isn't prompt quality. It's treating natural language as executable logic.
 
@@ -94,66 +89,11 @@ Two different things are getting mixed together:
 
 Interface belongs in prompts. System behavior belongs in the system.
 
-### Three Prompt-Only Failure Vignettes (Realistic, Anonymized)
-
-#### 1) The Citation Mirage
-
-**Request:** "Write a policy change brief with citations to internal policy pages."
-
-**Prompt-only attempt:**
-
-- Add "include citations" and "quote sources verbatim."
-- Add "if you don't know, say you don't know."
-
-**What happens anyway:**
-
-- The model produces plausible-sounding citations that don't resolve.
-- "Verbatim quotes" are actually paraphrases.
-- The brief *looks* well sourced, so a stakeholder trusts it.
-
-**What's missing:** Retrieval, a citation store, and a claim-to-source map that can be validated.
-
-#### 2) The Alignment Trap (Objectives vs. Assessment)
-
-**Request:** "Create an annual compliance training module: objectives, content outline, scenarios, and quiz."
-
-**Prompt-only attempt:**
-
-- Add "ensure objectives and assessments are aligned."
-- Add "use measurable verbs."
-
-**What happens anyway:**
-
-- Objectives are "measurable" on paper but not anchored to observable job behaviors.
-- The quiz tests definitions while the objective is behavior (e.g., "report an incident" vs. "define PII").
-- SMEs and legal reviewers reject it for misalignment and missing policy mapping.
-
-**What's missing:** An alignment rubric, a structured objective format, and a check that every objective is assessed and practiced.
-
-#### 3) The Schema That Breaks the Workflow
-
-**Request:** "Return the 'Required actions' section as JSON so our ticketing workflow can create tasks."
-
-**Prompt-only attempt:**
-
-- Add "ONLY output valid JSON."
-- Add a JSON schema in the prompt.
-
-**What happens anyway:**
-
-- An apology sentence sneaks in.
-- One field name drifts (`due_date` vs. `deadline`).
-- A nested field flips from a string to an array.
-
-**What's missing:** Schema validation, repair/retry logic, and a system contract that treats invalid outputs as failures—not "close enough."
-
 ### Reframing: Prompts Are Policies, Not Enforcement
 
-Think of a prompt as policy text:
+Think of a prompt as policy text: It expresses intent, but only a system can enforce it.
 
-- It expresses intent ("be concise," "cite sources," "avoid confidential info").
-- It can guide behavior.
-- It cannot enforce access, freshness, correctness, or contracts.
+![System-Required Needs List](../artifacts/system_required_needs_list.md)
 
 In production, policies only matter when they're backed by mechanisms:
 
@@ -171,58 +111,24 @@ The rest of this chapter introduces two running case studies that will thread th
 ### Research+Write (Policy Change Brief)
 
 - **Baseline (prompt-only):** Ask for a structured brief "with citations" and "quotes" without any retrieval mechanism.
-
-- **Prompt-only baseline (example prompt; intentionally naive):**
-
-  ```text
-  Write a policy change brief using the structure in `case_studies/research_write_policy_change_brief_TEMPLATE.md`.
-
-  Constraints:
-  - Use our internal policy wiki/SOPs as your sources.
-  - Include citations for all key claims (links or doc IDs).
-  - Quote sources verbatim when describing what changed.
-  - If sources are missing, list what you need; do not invent citations.
-
-  Output in Markdown.
-  ```
+- **Reference Prompt:** [Baseline "Naive" Mega-Prompt (Research+Write)](../case_studies/case_study_A_baseline_prompt.md)
 
 - **Typical brittleness to watch for:**
   - Citations that look real but don't resolve
   - Missing attribution for key claims ("best practice" with no source)
   - Confident summaries that don't match the underlying policy diff
 
-- **What this chapter sets up for later:**
-  - You will add retrieval, a citation store, and a claim-to-source map.
-  - You will treat "citation resolves" as a verification step, not a formatting preference.
-
 - **Anchor template:** `case_studies/research_write_policy_change_brief_TEMPLATE.md`
 
 ### Instructional Design (Annual Compliance Training)
 
 - **Baseline (prompt-only):** Ask for a full module "aligned end-to-end" without policy lookup, alignment checks, or approvals.
-
-- **Prompt-only baseline (example prompt; intentionally naive):**
-
-  ```text
-  Create an annual compliance training module using the structure in `case_studies/instructional_design_compliance_training_MODULE_TEMPLATE.md`.
-
-  Constraints:
-  - Cover security, privacy, and acceptable use.
-  - Ensure objectives ↔ activities ↔ assessments are aligned.
-  - Ensure content matches our current internal policies.
-  - Include accessibility considerations.
-
-  Output in Markdown.
-  ```
+- **Reference Prompt:** [Baseline "Naive" Mega-Prompt (Instructional Design)](../case_studies/case_study_B_baseline_prompt.md)
 
 - **Typical brittleness to watch for:**
   - Misalignment: objectives, activities, assessments
   - Policy drift: contradicts the latest policy or omits required topics
   - Accessibility gaps that aren't fixed by "please be accessible"
-
-- **What this chapter sets up for later:**
-  - You will add policy lookup, an alignment check, and an approval/audit trail.
-  - You will treat "alignment passes rubric" as a gate before publishing.
 
 - **Anchor template:** `case_studies/instructional_design_compliance_training_MODULE_TEMPLATE.md`
 

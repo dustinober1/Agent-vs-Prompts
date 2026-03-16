@@ -199,14 +199,15 @@ These are not "nice to have." They are the minimum needed to turn failures into 
 
 ## Chapter Exercise: Create Your Failure Budget
 
-Write a "failure budget" for both case studies: what can go wrong, how you'll detect it, and what you'll do when detection fires.
+The first step in moving from a prompt to a system is to define your "failure budget." This is a map of what can go wrong, how you'll detect it, and how you'll respond.
 
-**Suggested format (copy/paste for each case study):**
+### Failure Budget: Research+Write (Case Study A)
 
-| Failure mode | Impact | Likelihood | Detectability | Signal(s) | Gate / response |
-|---|---:|---:|---:|---|---|
-| Objective not assessed | High | Medium | High | Alignment table has a gap | Block publish; regenerate assessment + scenario |
-| | | | | | |
+![Failure Budget A](../artifacts/failure_budget_A.md)
+
+### Failure Budget: Instructional Design (Case Study B)
+
+![Failure Budget B](../artifacts/failure_budget_B.md)
 
 **Rules of thumb:**
 - If a failure is **high impact** and **hard to detect**, it requires a **human gate** or a redesign (don't ship it "best effort")

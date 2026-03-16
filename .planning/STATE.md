@@ -21,5 +21,5 @@ Project initialized via Unified Flow.
 - Case studies (Research+Write, Instructional Design) are prioritized.
 
 ## Session Info
-- **Stopped at**: N/A
-- **Resume file**: N/A
+- **Stopped at**: Phase 1 context gathered
+- **Resume file**: .planning/phases/01-foundation-the-prompting-plateau/01-CONTEXT.md

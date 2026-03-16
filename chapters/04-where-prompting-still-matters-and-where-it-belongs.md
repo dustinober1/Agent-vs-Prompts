@@ -163,6 +163,8 @@ The larger it is, the more you’ll suffer:
 
 Use this decision checklist and allocation budget to keep your prompts small and stable.
 
+![Prompt vs. System Checklist](../artifacts/prompt_vs_system_checklist.md)
+
 ![Prompt Surface Area Budget](../artifacts/prompt_surface_area_budget.md)
 
 ### “Small prompts” that scale (because the system does the heavy lifting)

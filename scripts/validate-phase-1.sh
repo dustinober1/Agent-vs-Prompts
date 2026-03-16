@@ -44,10 +44,11 @@ fi
 
 # 01-01-06: Standalone Artifacts
 ARTIFACT_COUNT=$(ls artifacts/*.md 2>/dev/null | wc -l | xargs)
-if [ "$ARTIFACT_COUNT" -ge 1 ]; then
+if [ "$ARTIFACT_COUNT" -eq 10 ]; then
     echo "✅ Found $ARTIFACT_COUNT artifacts in /artifacts/."
 else
-    echo "⚠️ No markdown artifacts found in /artifacts/ yet."
+    echo "⚠️ Expected 10 markdown artifacts in /artifacts/, but found $ARTIFACT_COUNT."
+    # List missing artifacts if needed, but for now just show count.
 fi
 
 echo "Phase 01 Validation Summary Complete."

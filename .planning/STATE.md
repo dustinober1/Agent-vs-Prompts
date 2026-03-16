@@ -19,3 +19,7 @@ Project initialized via Unified Flow.
 - Primary tech stack is Markdown.
 - Research phase is enabled.
 - Case studies (Research+Write, Instructional Design) are prioritized.
+
+## Session Info
+- **Stopped at**: N/A
+- **Resume file**: N/A

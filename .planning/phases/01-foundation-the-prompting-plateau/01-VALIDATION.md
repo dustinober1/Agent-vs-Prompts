@@ -3,7 +3,7 @@ phase: 01
 slug: foundation-the-prompting-plateau
 status: draft
 nyquist_compliant: true
-wave_0_complete: false
+wave_0_complete: true
 created: 2026-03-15
 ---
 
@@ -38,12 +38,12 @@ created: 2026-03-15
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 01-01-01 | 01 | 1 | Initialize /artifacts/ | unit | `ls -d artifacts/` | ❌ W0 | ⬜ pending |
-| 01-01-02 | 01 | 1 | Ch 1 Artifacts | integration | `grep "Plateau Symptom Checklist" chapters/01-*.md` | ✅ | ⬜ pending |
-| 01-01-03 | 01 | 2 | Ch 2 Artifacts | integration | `grep "Failure Budget" chapters/02-*.md` | ✅ | ⬜ pending |
-| 01-01-04 | 01 | 2 | Ch 3 Artifacts | integration | `grep "Prompt-Component Map" chapters/03-*.md` | ✅ | ⬜ pending |
-| 01-01-05 | 01 | 3 | Ch 4 Artifacts | integration | `grep "Prompt Surface Area Budget" chapters/04-*.md` | ✅ | ⬜ pending |
-| 01-01-06 | 01 | 3 | Standalone Artifacts | unit | `ls artifacts/*.md | wc -l | grep 10` | ❌ W0 | ⬜ pending |
+| 01-01-01 | 01 | 1 | Initialize /artifacts/ | unit | `ls -d artifacts/` | ✅ | ✅ green |
+| 01-01-02 | 01 | 1 | Ch 1 Artifacts | integration | `grep "Plateau Symptom Checklist" chapters/01-*.md` | ✅ | ✅ green |
+| 01-01-03 | 01 | 2 | Ch 2 Artifacts | integration | `grep "Failure Budget" chapters/02-*.md` | ✅ | ✅ green |
+| 01-01-04 | 01 | 2 | Ch 3 Artifacts | integration | `grep "Prompt-Component Map" chapters/03-*.md` | ✅ | ✅ green |
+| 01-01-05 | 01 | 3 | Ch 4 Artifacts | integration | `grep "Prompt Surface Area Budget" chapters/04-*.md` | ✅ | ✅ green |
+| 01-01-06 | 01 | 3 | Standalone Artifacts | unit | `ls artifacts/*.md | wc -l | grep 10` | ✅ | ✅ green |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -51,9 +51,9 @@ created: 2026-03-15
 
 ## Wave 0 Requirements
 
-- [ ] `mkdir -p artifacts/` — initialize directory
-- [ ] `touch artifacts/.gitkeep` — ensure tracked
-- [ ] `./scripts/validate-phase-1.sh` — create validation script
+- [x] `mkdir -p artifacts/` — initialize directory
+- [x] `touch artifacts/.gitkeep` — ensure tracked
+- [x] `./scripts/validate-phase-1.sh` — create validation script
 
 *If none: "Existing infrastructure covers all phase requirements."*
 

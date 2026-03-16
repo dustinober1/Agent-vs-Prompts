@@ -161,22 +161,9 @@ The larger it is, the more you’ll suffer:
 - difficulty testing (“what does this prompt guarantee?”)
 - higher security risk (“is a prompt instruction acting like a control?”)
 
-A useful way to shrink prompt surface area is to ask, for each requirement:
-- **Is it high-stakes?** (security, compliance, money) → enforce outside prompt
-- **Does it change often?** (policy, pricing, org rules) → config/policy engine, not prompt prose
-- **Is it machine-consumed?** (JSON, tickets, diffs) → schema + validators, not “ONLY output JSON”
-- **Is it about readability?** (tone, structure, clarity) → prompt is usually the right layer
+Use this decision checklist and allocation budget to keep your prompts small and stable.
 
-Quick cheat sheet:
-
-| Requirement | In prompt? | In system? | Why |
-|---|---:|---:|---|
-| Tone/voice/reading level | ✅ | ◻️ | Best handled as instruction |
-| Section structure/template | ✅ | ✅ | Prompt guides; validator enforces |
-| Allowed sources | ✅ (declare) | ✅ (enforce) | Permissions + retrieval controls |
-| “Include citations” | ✅ (request) | ✅ (enforce) | Retrieval + resolution checks |
-| “Never leak secrets” | ✅ (request) | ✅ (enforce) | Prompts aren’t security boundaries |
-| Output must parse/schema | ◻️ | ✅ | Needs validation + repair loop |
+![Prompt Surface Area Budget](../artifacts/prompt_surface_area_budget.md)
 
 ### “Small prompts” that scale (because the system does the heavy lifting)
 Here are examples of prompts that stay small because they assume the system provides data and enforces checks.

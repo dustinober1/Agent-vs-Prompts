@@ -423,57 +423,21 @@ Suggested steps:
 | Stop conditions | all gates pass; needs approval; budget exceeded |
 | Fail closed on | alignment failures; missing policy mappings; accessibility failures |
 
-## Artifacts to produce
+### Artifacts to produce
 
-### Minimum viable agency (MVA) decision record
-Copy/paste template (fill one per feature):
-```yaml
-feature:
-  name: ""
-  user_job: ""
-  primary_artifact: ""
+#### Minimum viable agency (MVA) decision record
 
-acceptance_criteria:
-  required_sections: []
-  grounding:
-    citations_required: true
-    allowed_sources: []
-    freshness_cutoff: ""
-  safety_constraints: []
+Use this template to document and justify the level of agency for any new feature. It turns "let's use an agent" from a vibe into an architectural decision.
 
-agency_choice:
-  rung: 0
-  autonomy: "low|medium|high"
-  authority: "read-only|write-with-approval|write-autonomous"
-  rationale: ""
+![MVA Decision Record Template](../artifacts/mva_decision_record_TEMPLATE.md)
 
-tools:
-  allowlist: []
-  write_tools_require_approval: []
+#### MVA Decision: Research+Write (Case Study A)
 
-gates:
-  - name: ""
-    type: "schema|rubric|tool-check|human-approval"
-    fail_response: "retry|revise|ask|escalate|block"
+![MVA Decision A](../artifacts/mva_A_research_write.md)
 
-budgets:
-  max_tool_calls: 0
-  max_retries_per_gate: 0
-  max_latency_seconds: 0
-  max_cost_usd: 0
+#### MVA Decision: Instructional Design (Case Study B)
 
-stopping_conditions: []
-escalation_path:
-  - observed_failure: ""
-    upgrade: ""
-```
-
-### Budget + gates table
-For each feature, write a one-page table that makes trade-offs explicit:
-- what you will block on (fail closed)
-- what you will retry
-- what requires human approval
-- what you will not do at all (denylist)
+![MVA Decision B](../artifacts/mva_B_instructional_design.md)
 
 ## Chapter exercise
 1) For each case study, fill an MVA decision record:

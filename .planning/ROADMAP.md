@@ -32,4 +32,5 @@
 
 ## Current Milestone
 - [x] Phase 0: Initialization (Unified Flow)
-- [ ] Phase 1: Foundation (Chapters 1-4)
+- [x] Phase 1: Foundation (Chapters 1-4)
+- [x] Phase 2: The Agentic Mindset (Chapters 5-7)

@@ -1,0 +1,40 @@
+# State Model: Research+Write (Case Study A)
+
+## Task State (Short-Term / Ephemeral)
+```yaml
+state:
+  task_id: "uuid"
+  current_step: int
+  plan:
+    goal: "Draft policy change brief"
+    steps: [id, name, status, artifact_id]
+  inputs:
+    policy_id: string
+    audience: "Internal|External"
+    freshness_cutoff: date
+  context:
+    retrieved_sources: [{doc_id, title, status, snippet_ids}]
+    active_snippets: [{snippet_id, source_id, text, section}]
+  counters:
+    tool_calls: int
+    retries: int
+```
+
+## Artifact State (Persistent per Task)
+| Artifact | Retention | Access | Sensitivity |
+| :--- | :--- | :--- | :--- |
+| **Source Inventory** | 7 Days | Task-only | Medium |
+| **Evidence Set** | 7 Days | Task-only | High |
+| **Draft Brief** | 30 Days | User/Approver | High |
+| **QA Report** | 90 Days | Audit/Admin | Low |
+
+## Memory Model (Long-Term)
+- **User Preferences:** (Indefinite / Consent Required)
+  - Preferred brief format (e.g., length, level of detail).
+  - Default audience settings.
+- **Organizational Knowledge:** (Indefinite / Org-Owned)
+  - House style guide (tone, terminology).
+  - Approved brief templates.
+- **Redaction Policy:** 
+  - **NEVER Persist:** PII, internal decision details, confidential quotes.
+  - **Redact on Write:** Names, dates, specific dollar amounts.

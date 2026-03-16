@@ -390,132 +390,19 @@ With state and memory properly designed, you can track where the agent is, what 
 
 ## Case study thread
 
-### Research+Write (Policy change brief)
+### Research+Write (Case Study A)
 
-The policy brief agent handles sensitive content—internal policies, guidance documents, potentially confidential context.
+The policy brief agent handles sensitive content—internal policies, guidance documents, potentially confidential context. Its state model prioritizes task ephemeral storage and a strict redaction policy for long-term memory.
 
-#### What to remember
+![State Model A](../artifacts/state_model_A.yaml)
 
-**Organizational memory (persist with org governance):**
-- House style guide (tone, format, common phrasings)
-- Approved template variations
-- Glossary of internal terms
+### Instructional Design (Case Study B)
 
-**User preferences (persist with consent):**
-- Preferred output format (sections, length)
-- Role and team (for permission filtering)
-- Past approved briefs (as templates if user opts in)
+The training module agent creates content that will be seen by many employees. Its memory needs focus on long-term organizational knowledge and audit trails for compliance.
 
-#### What NOT to remember
-
-**Never persist:**
-- Specific policy content retrieved during tasks
-- Quotes from confidential documents
-- Details of policy decisions or internal deliberations
-
-**Redact before any persistence:**
-- Names of policy owners → "[policy owner]"
-- Specific dates of incidents → "[date]"
-- Internal meeting references → "[internal discussion]"
-
-#### Memory rubric for Research+Write
-
-| Content | Persist? | Retention | Consent | Redaction |
-|---|---|---|---|---|
-| House style guide | Yes | Indefinite | Org | None |
-| User format preference | Yes | 1 year | User | None |
-| Brief template (approved) | Yes | 1 year | User | None |
-| Policy content retrieved | No | Task only | N/A | N/A |
-| Quotes from docs | No | Task only | N/A | N/A |
-| Confidential context | No | Never | N/A | Block |
-| Task outcome (success/fail) | Yes | Audit | System | None |
-
-#### Write gate examples
-
-```yaml
-write_gates:
-  - trigger: "user approves brief"
-    action: "persist brief as template"
-    requires: "user_consent"
-    redact: ["internal_doc_quotes", "policy_owner_names"]
-    
-  - trigger: "task completes"
-    action: "log outcome"
-    requires: nothing
-    persists: ["task_id", "status", "artifact_types"]
-    
-  - trigger: "confidential content detected"
-    action: "block_persist"
-    log: "confidentiality_block"
-```
-
-### Instructional Design (Annual compliance training)
-
-The training module agent creates content that will be seen by many employees. Its memory needs are different.
-
-#### What to remember
-
-**Organizational memory (persist with org governance):**
-- Approved learning objectives library
-- Scenario templates (anonymized)
-- Assessment item patterns
-- Accessibility standards
-- Brand and compliance requirements
-
-**User preferences (persist with consent):**
-- Preferred module formats
-- Role context (learning designer, SME, etc.)
-- Past modules they've authored (if opted in)
-
-#### What NOT to remember
-
-**Never persist:**
-- Real incident details used as scenario inspiration
-- Names of employees from examples
-- Specific internal failures or breaches
-- Sensitive operational details
-
-**Redact before any persistence:**
-- Employee names → "[employee]" or role-based ("a manager")
-- Incident dates → "[recently]" or "[last quarter]"
-- Specific dollar amounts → "[significant amount]"
-
-#### Memory rubric for Instructional Design
-
-| Content | Persist? | Retention | Consent | Redaction |
-|---|---|---|---|---|
-| Objective library | Yes | Indefinite | Org | None |
-| Scenario templates | Yes | Indefinite | Org | Anonymize |
-| Assessment patterns | Yes | Indefinite | Org | None |
-| User module history | Yes | 1 year | User | None |
-| Real incident details | No | Never | N/A | Block |
-| Employee names in examples | No | Never | N/A | Block |
-| Policy content (current) | No | Task only | N/A | N/A |
-| Approval records | Yes | 7 years | Audit | None |
-
-#### Write gate examples
-
-```yaml
-write_gates:
-  - trigger: "module approved and published"
-    action: "persist module as template"
-    requires: "org_approval"
-    redact: ["incident_details", "employee_names", "specific_dates"]
-    
-  - trigger: "new scenario created"
-    action: "check for persistence eligibility"
-    requires: "no_pii_check_pass"
-    redact: ["names", "dates", "amounts"]
-    
-  - trigger: "approval recorded"
-    action: "persist approval record"
-    requires: nothing
-    retention: "7_years"
-    persists: ["approver", "timestamp", "module_id", "approval_type"]
-```
+![State Model B](../artifacts/state_model_B.yaml)
 
 ## Artifacts to produce
-
 - A **memory stack diagram** for each case study
 - A **memory rubric** (what to remember, what to forget, what requires consent)
 - A **write gate specification** (triggers, consent requirements, redaction rules)

@@ -1,0 +1,43 @@
+# State Model: Instructional Design (Case Study B)
+
+## Task State (Hierarchical)
+```yaml
+state:
+  task_id: "uuid"
+  current_phase: string
+  high_level_plan: [phase_name, status, sub_step_ids]
+  inputs:
+    topic_list: [string]
+    learner_profile: string
+    modality: "e-learning|ILT"
+  context:
+    policy_map: [{topic, policy_id, version, last_verified}]
+    approved_templates: [{template_id, type}]
+  artifacts:
+    objectives: [string]
+    scenarios: [id, text, objective_mapping]
+    items: [id, question, rationale, objective_mapping]
+  counters:
+    tool_calls: int
+    retries_per_gate: {gate_name: int}
+```
+
+## Artifact State (Persistent for Audit)
+| Artifact | Retention | Access | Sensitivity |
+| :--- | :--- | :--- | :--- |
+| **Policy Map** | 1 Year | Org | Medium |
+| **Alignment Matrix** | 7 Years | Audit | High |
+| **QA Report (Accessibility)** | 7 Years | Audit | Low |
+| **Approval Log** | 7 Years | Audit | High |
+| **LMS Package Outline** | 30 Days | L&D | High |
+
+## Memory Model (Long-Term)
+- **Organizational Knowledge:** (Indefinite / Org-Owned)
+  - Learning objective library (Bloom's Taxonomy).
+  - Anonymized scenario templates.
+  - Pedagogical standards.
+- **User Preferences:** (1 Year / Consent Required)
+  - Preferred course format (e.g., number of scenarios, quiz length).
+- **Redaction Policy:**
+  - **NEVER Persist:** Real incident details, employee names, sensitive failures.
+  - **Redact on Write:** Names -> [role], Dates -> [recent], Amounts -> [relative].

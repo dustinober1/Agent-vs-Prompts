@@ -147,25 +147,19 @@ Here's a quick-reference summary of how the component-based approach applies to 
 ## Key Artifacts to Produce
 
 ### 1. Prompt-Component Map
-Document each component with its inputs, outputs, and invariants:
 
-| Component | Purpose | Inputs (required) | Outputs | Invariants (validated) | Failure response |
-|---|---|---|---|---|---|
-| | | | | | |
+The first step in paying down prompt debt is to map your mega-prompt into focused components. Use this template to document the purpose, inputs, and invariants for each component.
+
+![Prompt-Component Map Template](../artifacts/prompt_component_map_TEMPLATE.md)
 
 ### 2. Prompt Change Log Convention
-Establish a standard format for tracking modifications:
 
-- Component:
-- Version:
-- Date:
-- Change:
-- Why:
-- Expected impact:
-- Risks/regressions to watch:
-- Evals updated? (yes/no):
+To prevent "silent regressions" where one edit breaks a previous rule, establish a formal change log for every prompt modification.
+
+![Prompt Change Log CONVENTION](../artifacts/prompt_change_log_CONVENTION.md)
 
 ### 3. Minimal Eval Set Outline
+
 For each component, create 10–30 test cases covering:
 - Core functionality
 - Edge cases

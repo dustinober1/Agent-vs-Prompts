@@ -438,170 +438,17 @@ With verification in place, you have all the core building blocks: tools (Chapte
 
 ## Case study thread
 
-### Research+Write (Policy change brief)
+### Research+Write (Case Study A)
 
-The policy brief has specific verification requirements tied to its purpose: accurate, citable, current, confidential-appropriate.
+The policy brief has specific verification requirements tied to its purpose: accurate, citable, current, confidential-appropriate. We use a multi-layer verification stack to ensure every brief is grounded and safe.
 
-#### Verification suite
+![Verification Rubric A](../artifacts/verification_rubric_A.md)
 
-| Check | Type | Layer | Stop-ship? |
-|---|---|---|---|
-| Brief parses (valid markdown) | Structural | 1 | No (retry) |
-| Required sections present | Structural | 1 | No (retry) |
-| All citations resolve | Tool | 4 | Yes |
-| Quotes appear in cited docs | Tool | 4 | Yes |
-| Policy versions are current | Tool | 4 | Yes |
-| Redaction check passes | Deterministic | 2 | Yes |
-| Claims map to sources | Cross-validation | 3 | Yes (for key claims) |
-| Tone appropriate for audience | Evaluator | 5 | No (score only) |
+### Instructional Design (Case Study B)
 
-#### Verification flow
+The training module has verification requirements focused on alignment, accuracy, and accessibility. Every objective must be practiced and assessed, and all content must map to current policies and meet accessibility standards.
 
-```yaml
-verification_steps:
-  - step: 1
-    name: "structural"
-    checks: ["markdown_valid", "sections_present"]
-    on_fail: "retry draft generation"
-    
-  - step: 2
-    name: "citation_resolution"
-    checks: ["citations_resolve", "quotes_found"]
-    on_fail: "identify failed citations, re-retrieve or mark gaps"
-    
-  - step: 3
-    name: "freshness"
-    checks: ["policy_versions_current"]
-    on_fail: "stop-ship: escalate to policy owner"
-    
-  - step: 4
-    name: "confidentiality"
-    checks: ["redaction_check"]
-    on_fail: "stop-ship: cannot deliver with confidential content"
-    
-  - step: 5
-    name: "coverage"
-    checks: ["claim_source_mapping"]
-    on_fail: "flag unsupported claims, revise or mark NEEDS SOURCE"
-```
-
-#### Example verification report
-
-```yaml
-verification_report:
-  brief_id: "brief_2025_001"
-  version: "draft_v2"
-  
-  structural:
-    status: "passed"
-    
-  citation_resolution:
-    status: "passed"
-    citations_checked: 6
-    citations_resolved: 6
-    
-  freshness:
-    status: "passed"
-    policies_checked: 2
-    all_current: true
-    
-  confidentiality:
-    status: "passed"
-    patterns_checked: ["SSN", "internal_only", "confidential"]
-    matches: 0
-    
-  coverage:
-    status: "passed"
-    key_claims: 8
-    claims_with_sources: 8
-    coverage_ratio: 1.0
-    
-  overall: "passed"
-  decision: "ready for delivery"
-```
-
-### Instructional Design (Annual compliance training)
-
-The training module has verification requirements focused on alignment, accuracy, and accessibility.
-
-#### Verification suite
-
-| Check | Type | Layer | Stop-ship? |
-|---|---|---|---|
-| Module structure valid | Structural | 1 | No (retry) |
-| All objectives measurable | Deterministic | 2 | No (warning) |
-| Objective↔assessment alignment | Tool | 4 | Yes |
-| Policy references current | Tool | 4 | Yes |
-| Accessibility checklist passes | Tool | 4 | Yes |
-| Time estimates plausible | Deterministic | 2 | No (warning) |
-| Reading level appropriate | Evaluator | 5 | No (score only) |
-| Required approvals obtained | Human | 6 | Yes |
-
-#### Verification flow
-
-```yaml
-verification_steps:
-  - step: 1
-    name: "structural"
-    checks: ["module_structure_valid", "objectives_present"]
-    on_fail: "retry generation"
-    
-  - step: 2
-    name: "alignment"
-    tool: "alignment_check"
-    checks: ["every_objective_has_practice", "every_objective_has_assessment"]
-    on_fail: "stop-ship: generate missing practice/assessment items"
-    
-  - step: 3
-    name: "policy_accuracy"
-    checks: ["policy_versions_current", "policy_citations_resolve"]
-    on_fail: "stop-ship: escalate to SME for policy clarification"
-    
-  - step: 4
-    name: "accessibility"
-    tool: "accessibility_check"
-    checks: ["captions_present", "alt_text_present", "contrast_ok", "reading_level_ok"]
-    on_fail: "remediate specific failures, re-check"
-    
-  - step: 5
-    name: "approvals"
-    checks: ["security_approved", "legal_approved", "sme_approved"]
-    on_fail: "stop-ship: cannot publish without required approvals"
-```
-
-#### Example alignment verification
-
-```yaml
-alignment_check_result:
-  module_id: "compliance_2025_all_employees"
-  
-  objectives:
-    - id: "obj_001"
-      text: "Recognize phishing attempts in email"
-      has_practice: true
-      practice_ids: ["scenario_001", "scenario_002"]
-      has_assessment: true
-      assessment_ids: ["item_001", "item_002", "item_003"]
-      status: "aligned"
-      
-    - id: "obj_002"
-      text: "Report suspicious emails using proper procedure"
-      has_practice: true
-      practice_ids: ["scenario_003"]
-      has_assessment: false
-      assessment_ids: []
-      status: "gap"
-      gap_type: "missing_assessment"
-      
-  summary:
-    total_objectives: 5
-    fully_aligned: 4
-    gaps: 1
-    status: "failed"
-    
-  decision: "revise"
-  action: "generate assessment item for obj_002"
-```
+![Verification Rubric B](../artifacts/verification_rubric_B.md)
 
 ## Artifacts to produce
 

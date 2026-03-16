@@ -34,3 +34,4 @@
 - [x] Phase 0: Initialization (Unified Flow)
 - [x] Phase 1: Foundation (Chapters 1-4)
 - [x] Phase 2: The Agentic Mindset (Chapters 5-7)
+- [x] Phase 3: Core Building Blocks (Chapters 8-12)

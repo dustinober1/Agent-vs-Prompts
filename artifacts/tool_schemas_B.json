@@ -1,0 +1,76 @@
+{
+  "tools": [
+    {
+      "name": "policy_lookup",
+      "description": "Fetch current internal policy text by topic or keyword.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "topic": {
+            "type": "string",
+            "description": "The topic to fetch policy details for."
+          }
+        },
+        "required": ["topic"]
+      }
+    },
+    {
+      "name": "alignment_check",
+      "description": "Validate objective <-> practice <-> assessment mapping.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "objectives": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of learning objectives."
+          },
+          "practices": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of practice activities."
+          },
+          "assessments": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of assessment items."
+          }
+        },
+        "required": ["objectives", "practices", "assessments"]
+      }
+    },
+    {
+      "name": "accessibility_check",
+      "description": "Validate content against AA accessibility standards.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "The module content to scan."
+          }
+        },
+        "required": ["content"]
+      }
+    },
+    {
+      "name": "export_prep",
+      "description": "Format content for LMS ingestion (requires approval).",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "The final content to export."
+          },
+          "modality": {
+            "type": "string",
+            "enum": ["e-learning", "ILT"],
+            "description": "The delivery method."
+          }
+        },
+        "required": ["content", "modality"]
+      }
+    }
+  ]
+}

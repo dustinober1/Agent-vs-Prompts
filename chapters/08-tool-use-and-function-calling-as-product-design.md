@@ -244,18 +244,13 @@ For each layer:
 
 For each tool your agent can call, write a contract. This isn't documentation—it's a system artifact that makes everything else easier.
 
-A tool contract specifies:
-- **Inputs**: required fields, optional fields, types, constraints
-- **Outputs**: success shape, error shape, partial-result shape
-- **Behavior**: deterministic? idempotent? latency expectations?
-- **Permissions**: what scopes are required? what data is denied?
-- **Budgets**: max calls per request, max results
+#### Tool Schema: Research+Write (Case Study A)
 
-When you have contracts:
-- You can generate model-facing tool descriptions automatically
-- You can validate inputs before calling
-- You can parse outputs reliably in the observe step
-- You can debug incidents by checking whether contracts were honored
+![Tool Schema A](../artifacts/tool_schemas_A.json)
+
+#### Tool Schema: Instructional Design (Case Study B)
+
+![Tool Schema B](../artifacts/tool_schemas_B.json)
 
 Keep contracts in source control alongside your code. Version them like APIs—breaking changes are major versions. Review them during design and incident review.
 

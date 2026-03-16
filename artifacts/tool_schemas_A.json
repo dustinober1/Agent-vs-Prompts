@@ -1,0 +1,87 @@
+{
+  "tools": [
+    {
+      "name": "internal_search",
+      "description": "Search internal policy and SOP corpus for relevant documents.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Natural language query."
+          },
+          "max_results": {
+            "type": "integer",
+            "default": 10
+          }
+        },
+        "required": ["query"]
+      }
+    },
+    {
+      "name": "fetch_doc",
+      "description": "Retrieve the full text of a specific document by ID.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "doc_id": {
+            "type": "string",
+            "description": "The unique ID of the document."
+          }
+        },
+        "required": ["doc_id"]
+      }
+    },
+    {
+      "name": "extract_quotes",
+      "description": "Extract verbatim quotes from a text snippet for a specific claim.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "The text content to extract from."
+          },
+          "claim": {
+            "type": "string",
+            "description": "The claim to find supporting evidence for."
+          }
+        },
+        "required": ["content", "claim"]
+      }
+    },
+    {
+      "name": "cite_resolve",
+      "description": "Verify that a document ID or URL exists and is accessible.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "citation_id": {
+            "type": "string",
+            "description": "The ID or URL to resolve."
+          }
+        },
+        "required": ["citation_id"]
+      }
+    },
+    {
+      "name": "redaction_check",
+      "description": "Scan text for internal-only or confidential details based on audience.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "The text to scan."
+          },
+          "audience": {
+            "type": "string",
+            "enum": ["Internal", "External"],
+            "description": "The intended audience."
+          }
+        },
+        "required": ["text", "audience"]
+      }
+    }
+  ]
+}

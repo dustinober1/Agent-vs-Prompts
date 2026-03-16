@@ -527,137 +527,15 @@ trust_settings:
 
 ## Case study thread
 
-### Research+Write (Policy change brief)
+### Research+Write (Case Study A)
 
-The brief workflow implements trust patterns at each stage.
+The policy brief agent prioritizes **Transparency** and **Verifiability**. It surfaces progress signals (e.g., "Searching 8 documents...") and provides a detailed claim-source map so the user can verify any claim with a single click before approving the draft.
 
-#### UX gates and transparency
+### Instructional Design (Case Study B)
 
-```yaml
-brief_ux_flow:
-  stages:
-    - name: "research"
-      transparency:
-        - "Searching internal policy wiki..."
-        - "Found 8 relevant documents"
-        - "Searching external regulatory sources..."
-        - "Found 4 external references"
-      user_action: "View source list"
-      
-    - name: "outline"
-      transparency:
-        - "Proposed outline based on sources"
-        - sections_preview: [...]
-      user_action: "Approve outline or suggest changes"
-      approval_required: true
-      
-    - name: "draft"
-      transparency:
-        - "Drafting section 1 of 4..."
-        - word_count: 450
-        - citations: 6
-      user_action: "View draft in progress"
-      
-    - name: "verify"
-      transparency:
-        - "Verifying 6 citations..."
-        - "All citations resolved"
-        - redaction_check: "Passed"
-      user_action: "View verification report"
-      
-    - name: "publish"
-      transparency:
-        - "Ready to publish to compliance portal"
-        - visibility: "All employees"
-        - replaces: "None (new brief)"
-      user_action: "Approve or cancel publication"
-      approval_required: true
-```
+The training module agent, given its complex multi-stakeholder environment, implements a formal **Human-in-the-Loop (HITL)** protocol. This ensures that SMEs, designers, and compliance teams have explicit control over the most consequential decisions (objectives, assessments, and final export).
 
-#### What to show the user
-
-The claim-to-source map and redaction summary are the key artifacts for user review:
-
-**Claim-source map**:
-- Every factual claim in the brief
-- The source supporting that claim
-- Direct quotes where applicable
-- Confidence level
-
-**Redaction summary**:
-- Categories of sensitive content checked
-- Any flagged content (even if ultimately included)
-- Handling decision for each flag
-
-### Instructional Design (Annual compliance training)
-
-The training module workflow has more approval gates because it involves multiple stakeholders.
-
-#### UX gates and transparency
-
-```yaml
-training_ux_flow:
-  stages:
-    - name: "constraints"
-      transparency:
-        - audience: "All employees"
-        - time_limit: "45 minutes"
-        - policies: ["SEC-POL-001", "PRIV-POL-003"]
-      user_action: "Confirm constraints"
-      approval_required: true
-      
-    - name: "objectives"
-      transparency:
-        - objectives_count: 5
-        - policy_mapping: "All objectives trace to policy requirements"
-        - measurable: "All objectives have observable outcomes"
-      user_action: "Approve objectives"
-      review_routing: "SME"
-      approval_required: true
-      
-    - name: "assessments"
-      transparency:
-        - assessment_count: 12
-        - coverage: "All objectives assessed"
-        - rubrics: "Defined for all items"
-      user_action: "Approve assessments before activities"
-      approval_required: true
-      
-    - name: "activities"
-      transparency:
-        - activity_count: 8
-        - scenarios: 3
-        - alignment_check: "Passed"
-      user_action: "Review activities"
-      
-    - name: "accessibility"
-      transparency:
-        - accessibility_report: "All checks passed"
-        - reading_level: "Grade 8"
-        - captions: "Present for all video"
-      user_action: "View accessibility report"
-      
-    - name: "export"
-      transparency:
-        - target_lms: "Internal LMS"
-        - package_format: "SCORM 2004"
-        - affected_learners: 3400
-      user_action: "Approve export"
-      review_routing: "Compliance"
-      approval_required: true
-```
-
-#### What to show the user
-
-**Alignment rubric results**:
-- Matrix of objectives × assessments × activities
-- Gaps highlighted
-- Coverage percentage
-
-**Accessibility checklist**:
-- Each check performed
-- Pass/fail status
-- Remediation suggestions for any issues
+![HITL Protocol B](../artifacts/hitl_protocol_B.md)
 
 ## Artifacts to produce
 

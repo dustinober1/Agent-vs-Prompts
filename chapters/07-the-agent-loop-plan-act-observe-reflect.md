@@ -230,105 +230,17 @@ What changes is not whether you have a loop. What changes is:
 
 ## Case study thread
 
-### Research+Write (Policy change brief)
-Anchor template: `../case_studies/research_write_policy_change_brief_TEMPLATE.md`
+### Research+Write (Case Study A): The Brief Loop
 
-#### A concrete loop for the brief
-Plan steps (with artifacts + gates):
+For the policy change brief, the loop focuses on grounded drafting and strict verification of citations and confidentiality.
 
-1) **Clarify**
-- Artifact: clarified requirements (audience, scope, “as-of” date, allowed sources)
-- Gate: missing required inputs → ask user (don’t guess)
+![Agent Loop A](../artifacts/agent_loop_A.md)
 
-2) **Gather sources**
-- Actions: internal search → fetch docs; external search only if allowed
-- Artifact: evidence set (doc IDs/URLs + snippets)
-- Gate: permission failures → escalate/deny; weak sources → expand search within budget
+### Instructional Design (Case Study B): The Alignment Loop
 
-3) **Extract and map**
-- Actions: extract quotes/excerpts; build claim→source map (even if rough)
-- Artifact: claim map + excerpt set
-- Gate: missing evidence for key claims → block or mark NEEDS SOURCE (depending on stakes)
+For instructional design, the loop ensures that every learning objective is practiced and assessed, and that all content maps to current policies.
 
-4) **Outline**
-- Artifact: brief outline aligned to the template
-- Gate: required sections present
-
-5) **Draft**
-- Artifact: draft brief
-
-6) **Verify**
-- Actions: resolve citations; redaction/classification checks; coverage checks
-- Artifact: validation report (pass/fail + issues)
-- Gate: confidentiality failure → hard stop; citation failures → revise within retry budget
-
-7) **Deliver or escalate**
-- Deliver when gates pass.
-- Escalate when interpretation requires a policy owner.
-
-#### Default budgets (example)
-| Budget | Default |
-|---|---|
-| Tool calls | 12 |
-| Retries | 2 per gate |
-| Latency | 90 seconds |
-| Authority | read-only tools; publishing requires approval |
-
-#### Telemetry you want from day one
-- query terms used + doc IDs fetched
-- citation resolution success/failure
-- claim coverage (% of key claims with excerpts)
-- redaction/classification results
-- budgets consumed and stop reason
-
-### Instructional Design (Annual compliance training)
-Anchor template: `../case_studies/instructional_design_compliance_training_MODULE_TEMPLATE.md`
-
-#### A concrete loop for the module
-Plan steps (with artifacts + gates):
-
-1) **Clarify constraints**
-- Artifact: learner profile, modality, time, region, policies in scope
-- Gate: missing context → ask; don’t invent role details
-
-2) **Retrieve policy sources + templates**
-- Actions: policy/SOP lookup; template retrieval
-- Artifact: policy map (source IDs + “last verified” date) + selected templates
-- Gate: missing current policies → block/ask SME
-
-3) **Draft objectives + module flow**
-- Artifact: objectives + flow outline
-- Gate: objectives must be performance-based (review rubric)
-
-4) **Generate practice + scenarios**
-- Artifact: scenario set + facilitator/learner instructions
-
-5) **Generate assessments + rubrics**
-- Artifact: question bank + rubrics
-
-6) **Validate**
-- Actions: alignment rubric (objective↔practice↔assessment); accessibility checklist
-- Artifact: QA report (pass/fail + fixes)
-- Gate: alignment/accessibility failures → revise within retry budget; approvals required before export
-
-7) **Approvals + export**
-- Artifact: approval log + export package outline
-- Gate: missing approval → stop and request sign-off
-
-#### Default budgets (example)
-| Budget | Default |
-|---|---|
-| Tool calls | 14 |
-| Retries | 2 per gate |
-| Latency | 120 seconds (often interactive) |
-| Authority | export/write actions require approval |
-
-#### Telemetry you want from day one
-- policy sources used + versions (or last verified timestamps)
-- alignment rubric results (which objective failed, why)
-- accessibility checklist results
-- edits per iteration (how many revision loops)
-- approvals captured (who/when) and stop reason
+![Agent Loop B](../artifacts/agent_loop_B.md)
 
 ## Artifacts to produce
 - A loop diagram for each case study (states + stop conditions).
@@ -337,36 +249,9 @@ Plan steps (with artifacts + gates):
 - A standard “stop reason” taxonomy (success, budget, permission, approval, tool failure, policy violation).
 
 ## Chapter exercise
-For both case studies:
-1) Write explicit stopping conditions (success, budget exceeded, permission needed, irrecoverable tool failure).
-2) Define a loop budget (max tool calls, retries, total time, and authority).
-3) List the telemetry you need to debug failures and improve the loop.
-
-Suggested format (copy/paste):
-
-**Loop budget**
-| Budget | Value | Notes |
-|---|---:|---|
-| max tool calls |  |  |
-| max retries per gate |  |  |
-| max latency seconds |  |  |
-| authority |  |  |
-
-**Stopping conditions**
-| Stop reason | Trigger | User-facing response |
-|---|---|---|
-| success |  |  |
-| budget exceeded |  |  |
-| needs approval |  |  |
-| missing permission |  |  |
-| irrecoverable tool failure |  |  |
-
-**Telemetry**
-- inputs (audience, scope, “as-of” date, policies in scope)
-- plan + step index
-- tool calls (name, args, latency, status)
-- artifact IDs/paths + validation results
-- budgets consumed + stop reason
+1) For both case studies, review the stopping conditions and budgets in the artifacts above.
+2) Pick 3 features from your own product and define a similar "Step Table" including actions, artifacts, and gates.
+3) List the telemetry you need to debug failures and improve your loop based on these steps.
 
 With the loop defined, the next five chapters expand each leg in detail. Chapter 8 starts with the "act" phase: tool use and function calling as product design.
 

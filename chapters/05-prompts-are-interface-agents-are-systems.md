@@ -168,63 +168,23 @@ When you design an agentic system, you’re choosing boundaries:
 The mistake is not using humans. The mistake is pretending prompts replace them.
 
 ### A minimal “agent spec” (so later chapters have something concrete)
-To make the rest of the book practical, here’s a minimal agent spec format you can reuse. Keep it short, owned, and versioned.
 
-Copy/paste template:
-```yaml
-agent:
-  name: ""
-  goal: ""
-  owner: ""
-  version: ""
+To make the rest of the book practical, we'll use a minimal "agent spec" format. This spec turns vague behavior into a versioned system contract that defines the boundaries, artifacts, and invariants of the agent.
 
-inputs:
-  required:
-    - name: ""
-      description: ""
-  optional:
-    - name: ""
-      description: ""
-
-artifacts:
-  - name: ""
-    format: "markdown|json|table"
-    template: ""
-    storage: ""
-
-tools:
-  allowed:
-    - name: ""
-      purpose: ""
-      inputs: ""
-      outputs: ""
-  denied:
-    - name: ""
-
-policies_and_constraints:
-  - ""
-
-invariants_and_gates:
-  - invariant: ""
-    validator_or_gate: "schema|rubric|tool-check|human-approval"
-    fail_response: "retry|revise|ask|escalate|block"
-
-budgets:
-  max_tool_calls: 0
-  max_latency_seconds: 0
-  max_cost_usd: 0
-
-telemetry:
-  log:
-    - model_and_settings
-    - prompt_component_versions
-    - tool_calls_and_errors
-    - artifacts_and_validation_results
-```
+![Agent Spec Template](../artifacts/agent_spec_TEMPLATE.md)
 
 This spec forces the question that prompts can’t answer: *What does the system guarantee, and how do we know?*
 
-With this systems mindset established, the next question is: how much agency does a given task actually need? Chapter 6 introduces a ladder of solutions—from static prompts to multi-agent orchestration—so you can choose the simplest architecture that still works.
+### Agent Spec: Research+Write (Case Study A)
+
+![Agent Spec A](../artifacts/agent_spec_A_research_write.yaml)
+
+### Agent Spec: Instructional Design (Case Study B)
+
+![Agent Spec B](../artifacts/agent_spec_B_instructional_design.yaml)
+
+With this systems mindset established, the next question is: how much agency does a given task actually need?
+ Chapter 6 introduces a ladder of solutions—from static prompts to multi-agent orchestration—so you can choose the simplest architecture that still works.
 
 ## Case study thread
 ### Research+Write (Policy change brief)

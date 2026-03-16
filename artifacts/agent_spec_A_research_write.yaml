@@ -1,0 +1,58 @@
+agent:
+  name: "Research+Write Agent"
+  goal: "Draft policy change briefs grounded in verified internal sources."
+  owner: "Policy Ops Team"
+  version: "1.0.0"
+
+inputs:
+  required:
+    - name: "policy_id"
+      description: "the ID or name of the policy to research"
+    - name: "audience"
+      description: "who the brief is for (e.g., Executive, Frontline)"
+  optional:
+    - name: "freshness_cutoff"
+      description: "how recent sources must be"
+
+artifacts:
+  - name: "policy_change_brief"
+    format: "markdown"
+    template: "case_studies/research_write_policy_change_brief_TEMPLATE.md"
+    storage: "artifacts/drafts/briefs/"
+  - name: "claim_to_source_map"
+    format: "json"
+    template: null
+    storage: "artifacts/audit/maps/"
+
+tools:
+  allowed:
+    - name: "internal_search"
+      purpose: "find relevant policy wiki pages"
+    - name: "fetch_doc"
+      purpose: "read the full text of a specific page"
+    - name: "cite_resolve"
+      purpose: "verify that a link or doc ID exists"
+    - name: "redaction_check"
+      purpose: "ensure no internal-only details are leaked to external audience"
+  authority: "read-only"
+
+policies_and_constraints:
+  - "Use only the internal policy wiki as a source of truth."
+  - "Every key claim must be supported by a verbatim quote."
+  - "Do not invent citations or URLs."
+
+invariants_and_gates:
+  - invariant: "All citations resolve"
+    gate: "cite_resolve"
+    fail_response: "retry"
+  - invariant: "Redaction check passes"
+    gate: "redaction_check"
+    fail_response: "block"
+  - invariant: "Claim coverage > 90%"
+    gate: "rubric-check"
+    fail_response: "ask"
+
+budgets:
+  max_tool_calls: 12
+  max_retries: 2
+  max_latency_seconds: 90

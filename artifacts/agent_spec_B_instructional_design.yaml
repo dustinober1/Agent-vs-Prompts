@@ -1,0 +1,57 @@
+agent:
+  name: "Instructional Design Agent"
+  goal: "Draft annual compliance training modules aligned to verified internal policies."
+  owner: "L&D Team"
+  version: "1.0.0"
+
+inputs:
+  required:
+    - name: "topic_list"
+      description: "the specific policy topics to cover (e.g., Security, Privacy)"
+    - name: "learner_profile"
+      description: "the role and experience level of the intended learners"
+    - name: "modality"
+      description: "how the training is delivered (e.g., e-learning, ILT)"
+
+artifacts:
+  - name: "training_module_outline"
+    format: "markdown"
+    template: "case_studies/instructional_design_compliance_training_MODULE_TEMPLATE.md"
+    storage: "artifacts/drafts/modules/"
+  - name: "alignment_matrix"
+    format: "table"
+    template: null
+    storage: "artifacts/audit/alignment/"
+
+tools:
+  allowed:
+    - name: "policy_lookup"
+      purpose: "fetch current internal policy text"
+    - name: "alignment_check"
+      purpose: "verify objective <-> practice <-> assessment mapping"
+    - name: "accessibility_check"
+      purpose: "validate content against W3C/internal guidelines"
+    - name: "export_prep"
+      purpose: "format content for LMS ingestion"
+  authority: "write-with-approval"
+
+policies_and_constraints:
+  - "Content must match current internal policy versions (last 30 days)."
+  - "Every learning objective must be practiced and assessed."
+  - "Module must meet AA accessibility standards."
+
+invariants_and_gates:
+  - invariant: "Alignment gap count = 0"
+    gate: "alignment_check"
+    fail_response: "retry"
+  - invariant: "Accessibility checklist complete"
+    gate: "accessibility_check"
+    fail_response: "block"
+  - invariant: "Policy freshness < 30 days"
+    gate: "policy_lookup"
+    fail_response: "ask"
+
+budgets:
+  max_tool_calls: 14
+  max_retries: 2
+  max_latency_seconds: 120
